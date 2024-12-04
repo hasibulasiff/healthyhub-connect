@@ -1,4 +1,4 @@
-import { Dumbbell, Yoga, Trophy, Heart, Swimming, Users } from "lucide-react";
+import { Dumbbell, Trophy, Heart, Users, Waves, Lotus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const categories = [
@@ -13,7 +13,7 @@ const categories = [
   {
     id: 2,
     name: "Yoga Studios",
-    icon: Yoga,
+    icon: Lotus,
     count: 89,
     color: "bg-purple-100",
     iconColor: "text-purple-500"
@@ -37,7 +37,7 @@ const categories = [
   {
     id: 5,
     name: "Swimming Pools",
-    icon: Swimming,
+    icon: Waves,
     count: 45,
     color: "bg-cyan-100",
     iconColor: "text-cyan-500"
