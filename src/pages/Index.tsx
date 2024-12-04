@@ -1,5 +1,8 @@
 import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
+import FeaturedListings from "@/components/FeaturedListings";
+import Categories from "@/components/Categories";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -7,8 +10,10 @@ const Index = () => {
       <Navbar />
       <main>
         <HeroSearch />
-        {/* More sections will be added here */}
+        <FeaturedListings />
+        <Categories />
       </main>
+      <Footer />
     </div>
   );
 };
