@@ -22,6 +22,8 @@ import Review from "./pages/Review";
 import ListingManagement from "./pages/ListingManagement";
 import SubscriptionPricing from "./pages/SubscriptionPricing";
 import EventAnalytics from "./pages/EventAnalytics";
+import NotFound from "./pages/NotFound";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => (
           <Route path="/listings" element={<ListingManagement />} />
           <Route path="/subscription" element={<SubscriptionPricing />} />
           <Route path="/analytics" element={<EventAnalytics />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
