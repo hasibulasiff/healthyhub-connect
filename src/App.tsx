@@ -19,6 +19,9 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import MembershipPurchase from "./pages/MembershipPurchase";
 import Review from "./pages/Review";
+import ListingManagement from "./pages/ListingManagement";
+import SubscriptionPricing from "./pages/SubscriptionPricing";
+import EventAnalytics from "./pages/EventAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +48,9 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/membership" element={<MembershipPurchase />} />
           <Route path="/review" element={<Review />} />
+          <Route path="/listings" element={<ListingManagement />} />
+          <Route path="/subscription" element={<SubscriptionPricing />} />
+          <Route path="/analytics" element={<EventAnalytics />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
