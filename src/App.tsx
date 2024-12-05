@@ -14,6 +14,11 @@ import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import UserDashboard from "./pages/UserDashboard";
 import ProfileSettings from "./pages/ProfileSettings";
+import FAQ from "./pages/FAQ";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import MembershipPurchase from "./pages/MembershipPurchase";
+import Review from "./pages/Review";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +40,11 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/user/dashboard" element={<UserDashboard />} />
           <Route path="/user/settings" element={<ProfileSettings />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/membership" element={<MembershipPurchase />} />
+          <Route path="/review" element={<Review />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
