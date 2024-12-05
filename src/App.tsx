@@ -24,6 +24,7 @@ import SubscriptionPricing from "./pages/SubscriptionPricing";
 import EventAnalytics from "./pages/EventAnalytics";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
+import Archive from "./pages/Archive";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchResults />} />
+          <Route path="/archive" element={<Archive />} />
           <Route path="/center/:id" element={<CenterDetail />} />
           <Route path="/dashboard" element={<OwnerDashboard />} />
           <Route path="/about" element={<About />} />
