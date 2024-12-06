@@ -18,7 +18,7 @@ const HeroSearch = () => {
   };
 
   return (
-    <div className="relative min-h-[85vh] flex items-center justify-center bg-[#0a0118]">
+    <div className="relative min-h-[80vh] flex items-center justify-center bg-[#0a0118] mt-16">
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48')] bg-cover bg-center opacity-20" />
       
       {/* Gradient Overlay */}
