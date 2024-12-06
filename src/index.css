@@ -32,10 +32,39 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#0a0118] text-foreground;
   }
 }
 
 .glass-effect {
-  @apply bg-white/80 backdrop-blur-md;
+  @apply bg-white/10 backdrop-blur-md border-white/20;
+}
+
+/* Futuristic button animation */
+.btn-hover-effect {
+  @apply relative overflow-hidden transition-all duration-300;
+}
+
+.btn-hover-effect::after {
+  @apply content-[''] absolute inset-0 bg-gradient-to-r from-purple-600/50 to-pink-600/50 opacity-0 transition-opacity duration-300;
+}
+
+.btn-hover-effect:hover::after {
+  @apply opacity-100;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

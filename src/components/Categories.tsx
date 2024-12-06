@@ -54,23 +54,23 @@ const categories = [
 
 const Categories = () => {
   return (
-    <section className="py-16 px-4 bg-gray-50">
+    <section className="py-16 px-4 bg-gradient-to-b from-purple-900 to-[#0a0118]">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-4">Browse Categories</h2>
-        <p className="text-neutral text-center mb-12">Explore different types of fitness and wellness activities</p>
+        <h2 className="text-3xl font-bold text-center mb-4 text-white">Browse Categories</h2>
+        <p className="text-white/70 text-center mb-12">Explore different types of fitness and wellness activities</p>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {categories.map((category) => (
             <Card 
               key={category.id} 
-              className="hover:shadow-lg transition-shadow cursor-pointer group"
+              className="hover:shadow-xl transition-all duration-300 cursor-pointer group bg-white/10 backdrop-blur-md border-white/20 hover:border-purple-500/50"
             >
               <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className={`${category.color} p-4 rounded-full mb-4 group-hover:scale-110 transition-transform`}>
-                  <category.icon className={`w-6 h-6 ${category.iconColor}`} />
+                <div className={`${category.color} p-4 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300 bg-gradient-to-br from-purple-600 to-pink-600`}>
+                  <category.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">{category.name}</h3>
-                <p className="text-sm text-neutral">{category.count} places</p>
+                <h3 className="font-semibold mb-2 text-white group-hover:text-purple-400 transition-colors">{category.name}</h3>
+                <p className="text-sm text-white/70">{category.count} places</p>
               </CardContent>
             </Card>
           ))}
