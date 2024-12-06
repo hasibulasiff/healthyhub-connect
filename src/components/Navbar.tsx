@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, User, Building2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+
+  const handleSwitchChange = (checked: boolean) => {
+    setIsOwner(checked);
+    navigate(checked ? '/dashboard' : '/user/dashboard');
+  };
 
   return (
     <nav className="bg-white/80 backdrop-blur-md fixed w-full z-50 shadow-sm">
@@ -23,11 +29,14 @@ const Navbar = () => {
               <User size={20} className={!isOwner ? "text-accent" : "text-neutral"} />
               <Switch
                 checked={isOwner}
-                onCheckedChange={setIsOwner}
+                onCheckedChange={handleSwitchChange}
                 className="data-[state=checked]:bg-primary"
               />
               <Building2 size={20} className={isOwner ? "text-accent" : "text-neutral"} />
             </div>
+            <Link to="/archive" className="text-neutral hover:text-primary transition-colors">
+              Browse
+            </Link>
             <Link to="/about" className="text-neutral hover:text-primary transition-colors">
               About
             </Link>
@@ -61,26 +70,36 @@ const Navbar = () => {
                 <User size={20} className={!isOwner ? "text-accent" : "text-neutral"} />
                 <Switch
                   checked={isOwner}
-                  onCheckedChange={setIsOwner}
+                  onCheckedChange={handleSwitchChange}
                   className="data-[state=checked]:bg-primary"
                 />
                 <Building2 size={20} className={isOwner ? "text-accent" : "text-neutral"} />
               </div>
               <Link
+                to="/archive"
+                className="text-neutral hover:text-primary transition-colors text-center"
+                onClick={() => setIsOpen(false)}
+              >
+                Browse
+              </Link>
+              <Link
                 to="/about"
                 className="text-neutral hover:text-primary transition-colors text-center"
+                onClick={() => setIsOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/contact"
                 className="text-neutral hover:text-primary transition-colors text-center"
+                onClick={() => setIsOpen(false)}
               >
                 Contact
               </Link>
               <Link
                 to="/login"
                 className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors text-center"
+                onClick={() => setIsOpen(false)}
               >
                 Login
               </Link>

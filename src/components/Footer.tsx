@@ -13,10 +13,18 @@ const Footer = () => {
               Discover and connect with the best fitness, wellness, and sports centers in your area.
             </p>
             <div className="flex space-x-4 mt-6">
-              <Facebook className="w-5 h-5 hover:text-white cursor-pointer" />
-              <Instagram className="w-5 h-5 hover:text-white cursor-pointer" />
-              <Twitter className="w-5 h-5 hover:text-white cursor-pointer" />
-              <Youtube className="w-5 h-5 hover:text-white cursor-pointer" />
+              <a href="#" className="hover:text-white">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="#" className="hover:text-white">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="#" className="hover:text-white">
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a href="#" className="hover:text-white">
+                <Youtube className="w-5 h-5" />
+              </a>
             </div>
           </div>
 
@@ -36,10 +44,10 @@ const Footer = () => {
           <div>
             <h3 className="text-white text-lg font-bold mb-4">Categories</h3>
             <ul className="space-y-2">
-              <li><Link to="/category/gyms" className="hover:text-white">Gyms</Link></li>
-              <li><Link to="/category/yoga" className="hover:text-white">Yoga Studios</Link></li>
-              <li><Link to="/category/sports" className="hover:text-white">Sports Centers</Link></li>
-              <li><Link to="/category/wellness" className="hover:text-white">Wellness Centers</Link></li>
+              <li><Link to="/archive?category=gyms" className="hover:text-white">Gyms</Link></li>
+              <li><Link to="/archive?category=yoga" className="hover:text-white">Yoga Studios</Link></li>
+              <li><Link to="/archive?category=sports" className="hover:text-white">Sports Centers</Link></li>
+              <li><Link to="/archive?category=wellness" className="hover:text-white">Wellness Centers</Link></li>
             </ul>
           </div>
 
