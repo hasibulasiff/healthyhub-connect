@@ -68,3 +68,12 @@ html {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* Fix header gap */
+.page-padding {
+  @apply pt-20; /* Adds consistent padding for pages with header */
+}
+
+.landing-page {
+  @apply pt-0; /* No padding for landing page */
+}

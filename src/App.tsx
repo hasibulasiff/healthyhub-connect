@@ -25,6 +25,10 @@ import EventAnalytics from "./pages/EventAnalytics";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
 import Archive from "./pages/Archive";
+import AdPlacement from "./pages/AdPlacement";
+import AdManagement from "./pages/AdManagement";
+import AdAnalytics from "./pages/AdAnalytics";
+import AdPayment from "./pages/AdPayment";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +60,10 @@ const App = () => (
           <Route path="/subscription" element={<SubscriptionPricing />} />
           <Route path="/analytics" element={<EventAnalytics />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/ads/place" element={<AdPlacement />} />
+          <Route path="/ads/manage" element={<AdManagement />} />
+          <Route path="/ads/analytics" element={<AdAnalytics />} />
+          <Route path="/ads/payment" element={<AdPayment />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
