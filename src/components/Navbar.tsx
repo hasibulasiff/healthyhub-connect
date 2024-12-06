@@ -10,7 +10,8 @@ const Navbar = () => {
 
   const handleSwitchChange = (checked: boolean) => {
     setIsOwner(checked);
-    navigate(checked ? '/dashboard' : '/user/dashboard');
+    // Immediately navigate to prevent multiple switches
+    navigate(checked ? '/dashboard' : '/user/dashboard', { replace: true });
   };
 
   return (
