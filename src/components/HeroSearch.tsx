@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,7 +57,7 @@ const HeroSearch = () => {
   };
 
   return (
-    <div className="relative min-h-[80vh] flex items-center justify-center bg-[#0a0118]">
+    <div className="relative min-h-[80vh] flex items-center justify-center bg-[#0a0118] mt-16">
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48')] bg-cover bg-center opacity-20" />
       
       {/* Gradient Overlay */}
@@ -71,7 +71,7 @@ const HeroSearch = () => {
         </div>
       </div>
       
-      <div className="relative z-10 max-w-4xl w-full px-4 animate-fade-in">
+      <div className="relative z-10 max-w-6xl w-full px-4 animate-fade-in">
         <h1 className="text-4xl md:text-6xl font-bold text-center mb-6 bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
           Find Your Perfect <span className="text-white">Fitness Space</span>
         </h1>
@@ -80,8 +80,8 @@ const HeroSearch = () => {
         </p>
         
         <form onSubmit={handleSearch} className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap md:flex-nowrap gap-2 items-center">
+            <div className="relative flex-[2]">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" size={20} />
               <Input
                 placeholder="Search for centers, events..."
@@ -90,8 +90,9 @@ const HeroSearch = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="h-12 bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <SelectTrigger className="h-12 w-[160px] bg-white/10 backdrop-blur-sm border-white/20 text-white">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -102,11 +103,9 @@ const HeroSearch = () => {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-4">
+            
             <Select value={city} onValueChange={setCity}>
-              <SelectTrigger className="h-12 bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <SelectTrigger className="h-12 w-[140px] bg-white/10 backdrop-blur-sm border-white/20 text-white">
                 <SelectValue placeholder="City" />
               </SelectTrigger>
               <SelectContent>
@@ -119,7 +118,7 @@ const HeroSearch = () => {
             </Select>
             
             <Select value={country} onValueChange={setCountry}>
-              <SelectTrigger className="h-12 bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <SelectTrigger className="h-12 w-[140px] bg-white/10 backdrop-blur-sm border-white/20 text-white">
                 <SelectValue placeholder="Country" />
               </SelectTrigger>
               <SelectContent>
@@ -133,7 +132,7 @@ const HeroSearch = () => {
             
             <Button 
               type="submit" 
-              className="h-12 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5"
+              className="h-12 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25"
             >
               Search
             </Button>
