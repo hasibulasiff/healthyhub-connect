@@ -44,6 +44,46 @@ const dummyListings = [
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&q=80",
     reviews: 112,
   },
+  {
+    id: 5,
+    title: "Wellness Hub",
+    description: "Holistic wellness and meditation center",
+    location: "South Bay, California",
+    rating: 4.9,
+    category: "Wellness",
+    image: "https://images.unsplash.com/photo-1588286840104-8957b019727f?w=500&q=80",
+    reviews: 89,
+  },
+  {
+    id: 6,
+    title: "CrossFit Arena",
+    description: "Professional CrossFit training facility",
+    location: "Marina District, California",
+    rating: 4.8,
+    category: "CrossFit",
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&q=80",
+    reviews: 167,
+  },
+  {
+    id: 7,
+    title: "Mindful Movement",
+    description: "Pilates and mindful exercise studio",
+    location: "Hayes Valley, California",
+    rating: 4.7,
+    category: "Pilates",
+    image: "https://images.unsplash.com/photo-1588286840104-8957b019727f?w=500&q=80",
+    reviews: 143,
+  },
+  {
+    id: 8,
+    title: "Peak Performance",
+    description: "Athletic training and recovery center",
+    location: "Mission District, California",
+    rating: 4.8,
+    category: "Sports",
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&q=80",
+    reviews: 178,
+  },
 ];
 
 const FeaturedListings = () => {
@@ -62,7 +102,7 @@ const FeaturedListings = () => {
         >
           <CarouselContent className="-ml-4">
             {dummyListings.map((listing) => (
-              <CarouselItem key={listing.id} className="pl-4 md:basis-1/2 lg:basis-1/4">
+              <CarouselItem key={listing.id} className="pl-4 basis-full md:basis-1/2 lg:basis-1/4">
                 <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-md border-white/20 hover:border-purple-500/50">
                   <div className="aspect-video relative overflow-hidden">
                     <img 

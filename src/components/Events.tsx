@@ -44,6 +44,46 @@ const dummyEvents = [
     image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&q=80",
     attendees: 300,
   },
+  {
+    id: 5,
+    title: "CrossFit Competition",
+    description: "Annual CrossFit championship event",
+    date: "2024-08-15",
+    location: "Arena Center, California",
+    category: "Competition",
+    image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&q=80",
+    attendees: 400,
+  },
+  {
+    id: 6,
+    title: "Dance Fitness Party",
+    description: "High-energy dance workout session",
+    date: "2024-07-30",
+    location: "Community Hall, California",
+    category: "Dance",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80",
+    attendees: 250,
+  },
+  {
+    id: 7,
+    title: "Mindfulness Retreat",
+    description: "Weekend retreat for mental wellness",
+    date: "2024-09-05",
+    location: "Mountain Resort, California",
+    category: "Retreat",
+    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&q=80",
+    attendees: 100,
+  },
+  {
+    id: 8,
+    title: "Sports Nutrition Seminar",
+    description: "Expert talks on athletic nutrition",
+    date: "2024-08-20",
+    location: "Science Center, California",
+    category: "Seminar",
+    image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80",
+    attendees: 180,
+  },
 ];
 
 const Events = () => {
@@ -62,7 +102,7 @@ const Events = () => {
         >
           <CarouselContent className="-ml-4">
             {dummyEvents.map((event) => (
-              <CarouselItem key={event.id} className="pl-4 md:basis-1/2 lg:basis-1/4">
+              <CarouselItem key={event.id} className="pl-4 basis-full md:basis-1/2 lg:basis-1/4">
                 <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-md border-white/20 hover:border-purple-500/50">
                   <div className="aspect-video relative overflow-hidden">
                     <img 
