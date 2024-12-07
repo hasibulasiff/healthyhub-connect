@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const dummyEvents = [
@@ -84,6 +85,76 @@ const dummyEvents = [
     image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80",
     attendees: 180,
   },
+  {
+    id: 9,
+    title: "Power Lifting Competition",
+    description: "Annual strength showcase event",
+    date: "2024-09-15",
+    location: "Fitness Arena, California",
+    category: "Competition",
+    image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&q=80",
+    attendees: 300,
+  },
+  {
+    id: 10,
+    title: "Wellness Expo 2024",
+    description: "Largest wellness exhibition in the region",
+    date: "2024-10-01",
+    location: "Convention Center, California",
+    category: "Expo",
+    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&q=80",
+    attendees: 1000,
+  },
+  {
+    id: 11,
+    title: "Meditation Masterclass",
+    description: "Learn advanced meditation techniques",
+    date: "2024-09-20",
+    location: "Zen Center, California",
+    category: "Workshop",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80",
+    attendees: 50,
+  },
+  {
+    id: 12,
+    title: "Sports Medicine Conference",
+    description: "Latest developments in sports medicine",
+    date: "2024-10-15",
+    location: "Medical Center, California",
+    category: "Conference",
+    image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80",
+    attendees: 250,
+  },
+  {
+    id: 13,
+    title: "Nutrition Workshop",
+    description: "Healthy eating and meal planning",
+    date: "2024-09-25",
+    location: "Wellness Hub, California",
+    category: "Workshop",
+    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&q=80",
+    attendees: 75,
+  },
+  {
+    id: 14,
+    title: "Fitness Tech Showcase",
+    description: "Latest fitness technology and gadgets",
+    date: "2024-10-10",
+    location: "Tech Center, California",
+    category: "Expo",
+    image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&q=80",
+    attendees: 400,
+  },
+  {
+    id: 15,
+    title: "Wellness Retreat",
+    description: "Weekend of mindfulness and relaxation",
+    date: "2024-09-30",
+    location: "Mountain Resort, California",
+    category: "Retreat",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80",
+    attendees: 30,
+  },
 ];
 
 const Events = () => {
@@ -103,7 +174,7 @@ const Events = () => {
           <CarouselContent className="-ml-4">
             {dummyEvents.map((event) => (
               <CarouselItem key={event.id} className="pl-4 basis-full md:basis-1/2 lg:basis-1/4">
-                <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-md border-white/20 hover:border-purple-500/50">
+                <Card className="h-full group overflow-hidden hover:shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-md border-white/20 hover:border-purple-500/50">
                   <div className="aspect-video relative overflow-hidden">
                     <img 
                       src={event.image} 
@@ -133,9 +204,14 @@ const Events = () => {
                     </div>
                   </CardContent>
                   
-                  <CardFooter className="text-sm text-white/50">
-                    <Users className="w-4 h-4 mr-1" />
-                    {event.attendees} attendees
+                  <CardFooter className="flex justify-between items-center">
+                    <span className="text-sm text-white/50 flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      {event.attendees} attendees
+                    </span>
+                    <Button variant="secondary" className="bg-purple-500/20 hover:bg-purple-500/30 text-white">
+                      Join Event
+                    </Button>
                   </CardFooter>
                 </Card>
               </CarouselItem>
