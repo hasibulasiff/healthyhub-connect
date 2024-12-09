@@ -22,7 +22,7 @@ const MainHeader = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/10 backdrop-blur-md z-50 border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 bg-gradient-to-r from-purple-900/90 to-gray-900/90 backdrop-blur-md z-50 border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -51,7 +51,7 @@ const MainHeader = () => {
             // Rest of Website Header Content
             <div className="flex items-center">
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                <DropdownMenuTrigger className="flex items-center space-x-3 p-2 rounded-lg bg-gradient-to-r from-purple-900/90 to-gray-900/90 backdrop-blur-md hover:bg-white/10 transition-colors">
                   <div className="text-right mr-2">
                     <p className="text-sm font-medium text-white">John Doe</p>
                     <p className="text-xs text-white/70">john@example.com</p>
@@ -61,7 +61,7 @@ const MainHeader = () => {
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white/10 backdrop-blur-md border-white/20">
+                <DropdownMenuContent className="w-56 bg-gradient-to-r from-purple-900/90 to-gray-900/90 backdrop-blur-md border-white/20">
                   <DropdownMenuItem className="text-white hover:bg-white/10">
                     <User className="mr-2 h-4 w-4" />
                     <span>Dashboard</span>
