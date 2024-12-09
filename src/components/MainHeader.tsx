@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { LogOut, Settings, User, Building2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -12,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 
 const MainHeader = () => {
   const location = useLocation();
-  const isLandingPage = location.pathname === "/";
+  const navigate = useNavigate();
   const [isOwner, setIsOwner] = useState(false);
 
   const handleSwitchChange = (checked: boolean) => {
@@ -33,7 +34,7 @@ const MainHeader = () => {
             </Link>
           </div>
 
-          {isLandingPage ? (
+          {location.pathname === "/" ? (
             // Landing Page Header Content
             <div className="flex items-center space-x-6">
               <Link to="/archive" className="text-white/70 hover:text-white transition-colors">
