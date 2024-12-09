@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
 import FeaturedListings from "@/components/FeaturedListings";
@@ -11,69 +10,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Trophy, Users, Zap } from "lucide-react";
 
 const Index = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isOwner, setIsOwner] = useState(false);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-
-    // Three.js setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      alpha: true,
-    });
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Add meshes
-    const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x6e59a5,
-      wireframe: true,
-    });
-    const torus = new THREE.Mesh(geometry, material);
-    scene.add(torus);
-
-    camera.position.z = 30;
-
-    // Animation
-    const animate = () => {
-      requestAnimationFrame(animate);
-      torus.rotation.x += 0.01;
-      torus.rotation.y += 0.005;
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    // Handle resize
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      // Clean up Three.js resources
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-[#1a1528]">
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
       <Navbar />
       <main className="relative z-10">
         <HeroSearch />

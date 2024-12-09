@@ -10,7 +10,10 @@ import {
   Settings,
   Users,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  MonitorPlay,
+  PieChart,
+  DollarSign
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -27,6 +30,10 @@ const DashboardSidebar = ({ isOwner = false }) => {
     { icon: Calendar, label: "Schedule", path: "/schedule" },
     { icon: MessageSquare, label: "Reviews", path: "/reviews" },
     { icon: CreditCard, label: "Payments", path: "/payments" },
+    { icon: MonitorPlay, label: "Ad Placement", path: "/ads/place" },
+    { icon: ListChecks, label: "Ad Management", path: "/ads/manage" },
+    { icon: PieChart, label: "Ad Analytics", path: "/ads/analytics" },
+    { icon: DollarSign, label: "Ad Payments", path: "/ads/payment" },
     { icon: Settings, label: "Settings", path: "/settings" }
   ];
 
