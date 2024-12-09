@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
@@ -12,6 +12,7 @@ import { Shield, Trophy, Users, Zap } from "lucide-react";
 
 const Index = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -77,8 +78,13 @@ const Index = () => {
       <main className="relative z-10">
         <HeroSearch />
         <div className="bg-gradient-to-b from-[#1a1528] to-[#0f0a1e]">
-          <FeaturedListings />
-          <Categories />
+          <div className="relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-40%,#6e59a5,transparent)] opacity-30" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_80%_60%,#9b87f5,transparent)] opacity-20" />
+            <FeaturedListings />
+            <Categories />
+            <Events />
+          </div>
           
           {/* Why Choose Us Section */}
           <section className="py-16 px-4">
@@ -122,8 +128,6 @@ const Index = () => {
             </div>
           </section>
 
-          <Events />
-          
           {/* Call to Action Section */}
           <section className="py-20 px-4 text-center">
             <div className="max-w-3xl mx-auto">
