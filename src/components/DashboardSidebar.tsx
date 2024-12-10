@@ -13,7 +13,8 @@ import {
   ChevronRight,
   MonitorPlay,
   PieChart,
-  DollarSign
+  DollarSign,
+  MessageCircle
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ const DashboardSidebar = ({ isOwner = false }) => {
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
     { icon: Users, label: "Members", path: "/members" },
     { icon: Calendar, label: "Schedule", path: "/schedule" },
+    { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: MessageSquare, label: "Reviews", path: "/reviews" },
     { icon: CreditCard, label: "Payments", path: "/payments" },
     { icon: MonitorPlay, label: "Ad Placement", path: "/ads/place" },
@@ -41,6 +43,7 @@ const DashboardSidebar = ({ isOwner = false }) => {
     { icon: LayoutDashboard, label: "Overview", path: "/user/dashboard" },
     { icon: Building2, label: "My Memberships", path: "/memberships" },
     { icon: Calendar, label: "My Bookings", path: "/bookings" },
+    { icon: MessageCircle, label: "Messages", path: "/user/messages" },
     { icon: MessageSquare, label: "My Reviews", path: "/reviews" },
     { icon: CreditCard, label: "Payment History", path: "/payments" },
     { icon: Settings, label: "Settings", path: "/user/settings" }

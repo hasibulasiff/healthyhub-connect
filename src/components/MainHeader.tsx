@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogOut, Settings, User, Building2 } from "lucide-react";
+import { LogOut, Settings, User, Building2, MessageCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,6 +54,10 @@ const MainHeader = () => {
                   <DropdownMenuItem className="text-white hover:bg-white/10">
                     <User className="mr-2 h-4 w-4 text-purple-400" />
                     <span>Dashboard</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="text-white hover:bg-white/10">
+                    <MessageCircle className="mr-2 h-4 w-4 text-purple-400" />
+                    <Link to={isOwner ? "/messages" : "/user/messages"}>Messages</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-white/10">
                     <div className="flex items-center space-x-2">
