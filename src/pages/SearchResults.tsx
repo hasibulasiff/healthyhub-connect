@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
-  MapPin, Star, Users, DollarSign, Clock, Car, Shower, 
-  Pool, UserPlus, User, Award, Phone, Mail, Search,
+  MapPin, Star, Users, DollarSign, Clock, Car, Droplet, 
+  Waves, UserPlus, User, Award, Phone, Mail, Search,
   ChevronDown, Filter
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -159,8 +159,8 @@ const SearchResults = () => {
                   <div className="space-y-2">
                     {[
                       { id: 'parking', label: 'Parking', icon: Car },
-                      { id: 'showers', label: 'Showers', icon: Shower },
-                      { id: 'pool', label: 'Pool', icon: Pool },
+                      { id: 'showers', label: 'Showers', icon: Droplet },
+                      { id: 'pool', label: 'Pool', icon: Waves },
                       { id: 'trainers', label: 'Personal Trainers', icon: UserPlus },
                     ].map(({ id, label, icon: Icon }) => (
                       <div key={id} className="flex items-center space-x-2">
