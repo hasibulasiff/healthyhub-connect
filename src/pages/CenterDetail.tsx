@@ -6,6 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Star, Users, Clock, DollarSign, Calendar, Phone, Mail, Globe } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ReviewForm from "@/components/ReviewForm";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const dummyCenter = {
   id: 1,
@@ -41,6 +44,26 @@ const dummyCenter = {
 const CenterDetail = () => {
   const { id } = useParams();
   const [selectedImage, setSelectedImage] = useState(0);
+
+  const { data: reviews, refetch: refetchReviews } = useQuery({
+    queryKey: ["reviews", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select(`
+          *,
+          profiles:user_id (
+            username,
+            avatar_url
+          )
+        `)
+        .eq("center_id", id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,14 +122,14 @@ const CenterDetail = () => {
               <p className="text-neutral">{dummyCenter.description}</p>
             </div>
 
-            <Tabs defaultValue="amenities" className="w-full">
+            <Tabs defaultValue="reviews" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="amenities">Amenities</TabsTrigger>
                 <TabsTrigger value="schedule">Schedule</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="amenities" className="mt-4">
+              <TabsContent value="amenities">
                 <Card>
                   <CardHeader>
                     <CardTitle>Amenities & Features</CardTitle>
@@ -124,7 +147,7 @@ const CenterDetail = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="schedule" className="mt-4">
+              <TabsContent value="schedule">
                 <Card>
                   <CardHeader>
                     <CardTitle>Opening Hours</CardTitle>
@@ -147,8 +170,40 @@ const CenterDetail = () => {
                   <CardHeader>
                     <CardTitle>Customer Reviews</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-neutral">Reviews coming soon...</p>
+                  <CardContent className="space-y-6">
+                    <ReviewForm centerId={id!} onSuccess={refetchReviews} />
+                    
+                    <div className="space-y-4 mt-8">
+                      {reviews?.map((review) => (
+                        <Card key={review.id}>
+                          <CardContent className="pt-6">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="font-semibold">
+                                    {review.profiles?.username || "Anonymous"}
+                                  </div>
+                                  <div className="flex">
+                                    {[...Array(review.rating)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className="w-4 h-4 text-yellow-400 fill-current"
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                                <p className="text-muted-foreground">
+                                  {review.comment}
+                                </p>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {new Date(review.created_at).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
