@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
   MapPin, Star, Users, DollarSign, Clock, Car, Shower, 
-  Pool, UserPlus, Female, Award, Phone, Mail, Search,
+  Pool, UserPlus, User, Award, Phone, Mail, Search,
   ChevronDown, Filter
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -194,7 +194,7 @@ const SearchResults = () => {
                   <label className="text-sm font-medium">Special Features</label>
                   <div className="space-y-2">
                     {[
-                      { id: 'women-only', label: 'Women Only', icon: Female },
+                      { id: 'women-only', label: 'Women Only', icon: User },
                       { id: 'free-trial', label: 'Free Trial', icon: Award },
                       { id: 'kid-friendly', label: 'Kid Friendly', icon: Users },
                       { id: 'group-discount', label: 'Group Discount', icon: Users },
@@ -310,7 +310,7 @@ const SearchResults = () => {
                           </div>
 
                           <div className="flex gap-2 mt-2">
-                            {result.amenities.map((amenity, index) => (
+                            {result.amenities?.map((amenity, index) => (
                               <Badge key={index} variant="secondary">
                                 {amenity}
                               </Badge>
