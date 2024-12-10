@@ -9,6 +9,14 @@ import Footer from "@/components/Footer";
 import ReviewForm from "@/components/ReviewForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
+
+type ReviewWithProfile = Database['public']['Tables']['reviews']['Row'] & {
+  profiles: {
+    username: string | null;
+    avatar_url: string | null;
+  } | null;
+};
 
 const dummyCenter = {
   id: 1,
@@ -52,7 +60,7 @@ const CenterDetail = () => {
         .from("reviews")
         .select(`
           *,
-          profiles:user_id (
+          profiles (
             username,
             avatar_url
           )
@@ -61,7 +69,7 @@ const CenterDetail = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as ReviewWithProfile[];
     },
   });
 
