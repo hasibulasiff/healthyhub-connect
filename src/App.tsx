@@ -57,10 +57,10 @@ const App = () => (
             <Route path="/dashboard" element={<OwnerDashboard />} />
             <Route path="/listings" element={<ListingManagement />} />
             <Route path="/analytics" element={<EventAnalytics />} />
-            <Route path="/members" element={<div>Members Page</div>} />
-            <Route path="/schedule" element={<div>Schedule Page</div>} />
+            <Route path="/members" element={<MembersPage />} />
+            <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/reviews" element={<Review />} />
-            <Route path="/payments" element={<div>Payments Page</div>} />
+            <Route path="/payments" element={<PaymentsPage />} />
             <Route path="/settings" element={<ProfileSettings />} />
           </Route>
 
@@ -68,9 +68,9 @@ const App = () => (
           <Route element={<DashboardLayout isOwner={false} />}>
             <Route path="/user/dashboard" element={<UserDashboard />} />
             <Route path="/memberships" element={<MembershipPurchase />} />
-            <Route path="/bookings" element={<div>Bookings Page</div>} />
+            <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/user/reviews" element={<Review />} />
-            <Route path="/user/payments" element={<div>Payment History</div>} />
+            <Route path="/user/payments" element={<PaymentHistory />} />
             <Route path="/user/settings" element={<ProfileSettings />} />
           </Route>
 
