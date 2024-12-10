@@ -25,7 +25,6 @@ import SubscriptionPricing from "./pages/SubscriptionPricing";
 import EventAnalytics from "./pages/EventAnalytics";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
-import Archive from "./pages/Archive";
 import AdPlacement from "./pages/AdPlacement";
 import AdManagement from "./pages/AdManagement";
 import AdAnalytics from "./pages/AdAnalytics";
@@ -43,7 +42,6 @@ const App = () => (
           {/* Public routes */}
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchResults />} />
-          <Route path="/archive" element={<Archive />} />
           <Route path="/center/:id" element={<CenterDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
