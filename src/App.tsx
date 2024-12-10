@@ -29,6 +29,11 @@ import AdPlacement from "./pages/AdPlacement";
 import AdManagement from "./pages/AdManagement";
 import AdAnalytics from "./pages/AdAnalytics";
 import AdPayment from "./pages/AdPayment";
+import MembersPage from "./pages/MembersPage";
+import SchedulePage from "./pages/SchedulePage";
+import PaymentsPage from "./pages/PaymentsPage";
+import BookingsPage from "./pages/BookingsPage";
+import PaymentHistory from "./pages/PaymentHistory";
 
 const queryClient = new QueryClient();
 
