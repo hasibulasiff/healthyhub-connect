@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-[#0f0a1e] to-[#1a1528] text-gray-300">
+    <footer className="bg-gradient-to-b from-[#0f0a1e] to-[#1a1528] text-gray-300 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Section */}
-          <div>
+          <div className="animate-fade-in">
             <h3 className="text-white text-lg font-bold mb-4">HealthyThako</h3>
             <p className="text-sm text-white/70">
               Discover and connect with the best fitness, wellness, and sports centers in your area.
@@ -29,30 +29,66 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="animate-fade-in">
             <h3 className="text-white text-lg font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link to="/about" className="text-white/70 hover:text-purple-400 transition-colors">About Us</Link></li>
-              <li><Link to="/contact" className="text-white/70 hover:text-purple-400 transition-colors">Contact</Link></li>
-              <li><Link to="/faq" className="text-white/70 hover:text-purple-400 transition-colors">FAQs</Link></li>
-              <li><Link to="/terms" className="text-white/70 hover:text-purple-400 transition-colors">Terms & Conditions</Link></li>
-              <li><Link to="/privacy" className="text-white/70 hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
+              <li>
+                <Link to="/about" className="text-white/70 hover:text-purple-400 transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-white/70 hover:text-purple-400 transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="text-white/70 hover:text-purple-400 transition-colors">
+                  FAQs
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-white/70 hover:text-purple-400 transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="text-white/70 hover:text-purple-400 transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Categories */}
-          <div>
+          <div className="animate-fade-in">
             <h3 className="text-white text-lg font-bold mb-4">Categories</h3>
             <ul className="space-y-2">
-              <li><Link to="/archive?category=gyms" className="text-white/70 hover:text-purple-400 transition-colors">Gyms</Link></li>
-              <li><Link to="/archive?category=yoga" className="text-white/70 hover:text-purple-400 transition-colors">Yoga Studios</Link></li>
-              <li><Link to="/archive?category=sports" className="text-white/70 hover:text-purple-400 transition-colors">Sports Centers</Link></li>
-              <li><Link to="/archive?category=wellness" className="text-white/70 hover:text-purple-400 transition-colors">Wellness Centers</Link></li>
+              <li>
+                <Link to="/search?category=gyms" className="text-white/70 hover:text-purple-400 transition-colors">
+                  Gyms
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?category=yoga" className="text-white/70 hover:text-purple-400 transition-colors">
+                  Yoga Studios
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?category=sports" className="text-white/70 hover:text-purple-400 transition-colors">
+                  Sports Centers
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?category=wellness" className="text-white/70 hover:text-purple-400 transition-colors">
+                  Wellness Centers
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Contact Info */}
-          <div>
+          <div className="animate-fade-in">
             <h3 className="text-white text-lg font-bold mb-4">Contact Info</h3>
             <ul className="space-y-2 text-sm text-white/70">
               <li>1234 Fitness Street</li>

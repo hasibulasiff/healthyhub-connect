@@ -2,18 +2,17 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Send } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import ConversationList from "@/components/messages/ConversationList";
+import MessageList from "@/components/messages/MessageList";
+import MessageInput from "@/components/messages/MessageInput";
 
 const Messages = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [conversations, setConversations] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
-  const [newMessage, setNewMessage] = useState("");
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -50,7 +49,6 @@ const Messages = () => {
 
     fetchConversations();
 
-    // Subscribe to new conversations
     const conversationsSubscription = supabase
       .channel("conversations-channel")
       .on(
@@ -97,7 +95,6 @@ const Messages = () => {
 
     fetchMessages();
 
-    // Subscribe to new messages
     const messagesSubscription = supabase
       .channel("messages-channel")
       .on(
@@ -119,15 +116,14 @@ const Messages = () => {
     };
   }, [selectedConversation, toast]);
 
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedConversation || !newMessage.trim() || !user) return;
+  const handleSendMessage = async (message: string) => {
+    if (!selectedConversation || !user) return;
 
     setSending(true);
     const { error } = await supabase.from("messages").insert({
       conversation_id: selectedConversation,
       sender_id: user.id,
-      content: newMessage.trim()
+      content: message.trim()
     });
 
     if (error) {
@@ -137,8 +133,6 @@ const Messages = () => {
         title: "Error",
         description: "Failed to send message"
       });
-    } else {
-      setNewMessage("");
     }
     setSending(false);
   };
@@ -155,69 +149,17 @@ const Messages = () => {
     <div className="h-[calc(100vh-8rem)]">
       <h1 className="text-4xl font-bold mb-8">Messages</h1>
       <div className="grid grid-cols-12 gap-6 h-[calc(100%-6rem)]">
-        {/* Conversations List */}
-        <Card className="col-span-4 p-4">
-          <h2 className="text-xl font-semibold mb-4">Conversations</h2>
-          <ScrollArea className="h-[calc(100%-3rem)]">
-            <div className="space-y-2">
-              {conversations.map((conversation) => (
-                <button
-                  key={conversation.id}
-                  onClick={() => setSelectedConversation(conversation.id)}
-                  className={`w-full p-3 text-left rounded-lg transition-colors ${
-                    selectedConversation === conversation.id
-                      ? "bg-purple-500 text-white"
-                      : "hover:bg-purple-100 dark:hover:bg-purple-900"
-                  }`}
-                >
-                  <p className="font-medium">{conversation.centers?.name || "Unknown Center"}</p>
-                </button>
-              ))}
-              {conversations.length === 0 && (
-                <p className="text-muted-foreground text-center py-4">No conversations yet</p>
-              )}
-            </div>
-          </ScrollArea>
-        </Card>
+        <ConversationList
+          conversations={conversations}
+          selectedConversation={selectedConversation}
+          onSelectConversation={setSelectedConversation}
+        />
 
-        {/* Messages Area */}
         <Card className="col-span-8 p-4 flex flex-col">
           {selectedConversation ? (
             <>
-              <ScrollArea className="flex-1 mb-4">
-                <div className="space-y-4 p-2">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${message.sender_id === user?.id ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`max-w-[70%] p-3 rounded-lg ${
-                          message.sender_id === user?.id
-                            ? "bg-purple-500 text-white"
-                            : "bg-gray-100 dark:bg-gray-800"
-                        }`}
-                      >
-                        <p>{message.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                  {messages.length === 0 && (
-                    <p className="text-muted-foreground text-center py-4">No messages yet</p>
-                  )}
-                </div>
-              </ScrollArea>
-              <form onSubmit={sendMessage} className="flex gap-2">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  disabled={sending}
-                />
-                <Button type="submit" disabled={sending || !newMessage.trim()}>
-                  {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                </Button>
-              </form>
+              <MessageList messages={messages} />
+              <MessageInput onSendMessage={handleSendMessage} sending={sending} />
             </>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">

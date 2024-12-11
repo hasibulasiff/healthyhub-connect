@@ -27,7 +27,7 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
 
   const handleSwitchChange = (checked: boolean) => {
     setIsOwner(checked);
-    navigate(checked ? '/dashboard' : '/user/dashboard', { replace: true });
+    navigate(checked ? '/dashboard' : '/user/dashboard');
   };
 
   const handleSignOut = async () => {
@@ -71,7 +71,7 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
 
             <div className="flex items-center">
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center space-x-3 p-2 rounded-lg bg-gradient-to-r from-[#2d1f45] to-[#1a1528] hover:from-[#3d2a5d] hover:to-[#251b36] transition-all duration-300">
+                <DropdownMenuTrigger className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
                   <div className="text-right mr-2">
                     <p className="text-sm font-medium text-white">{user?.email}</p>
                     <p className="text-xs text-white/70">Account Settings</p>
