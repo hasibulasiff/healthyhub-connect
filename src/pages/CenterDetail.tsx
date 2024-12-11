@@ -66,7 +66,7 @@ const CenterDetail = () => {
             avatar_url
           )
         `)
-        .eq("center_id", id)
+        .eq('center_id', id.toString())
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -76,7 +76,7 @@ const CenterDetail = () => {
       
       return data as ReviewWithProfile[];
     },
-    enabled: !!id, // Only run query when we have an ID
+    enabled: Boolean(id), // Only run query when we have an ID
   });
 
   if (!id) {
