@@ -50,11 +50,13 @@ const dummyCenter = {
 };
 
 const CenterDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const { data: reviews, refetch: refetchReviews } = useQuery({
     queryKey: ["reviews", id],
     queryFn: async () => {
+      if (!id) throw new Error("No center ID provided");
+      
       const { data, error } = await supabase
         .from("reviews")
         .select(`
@@ -70,7 +72,10 @@ const CenterDetail = () => {
       if (error) throw error;
       return data as ReviewWithProfile[];
     },
+    enabled: !!id,
   });
+
+  if (!id) return <div>Center not found</div>;
 
   return (
     <div className="min-h-screen bg-[#0a0118]">
@@ -94,12 +99,11 @@ const CenterDetail = () => {
               amenities={dummyCenter.amenities}
               hours={dummyCenter.hours}
               reviews={reviews}
-              centerId={id!}
+              centerId={id}
               onReviewSuccess={refetchReviews}
             />
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
             <Card className="bg-white/10 backdrop-blur-md border-white/20">
               <CardHeader>
