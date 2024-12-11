@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
 import FeaturedListings from "@/components/FeaturedListings";
@@ -35,6 +36,15 @@ const testimonials = [
 
 const Index = () => {
   const [isOwner, setIsOwner] = useState(false);
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/register');
+  };
+
+  const handleLearnMore = () => {
+    navigate('/about');
+  };
 
   return (
     <div className="min-h-screen">
@@ -131,8 +141,21 @@ const Index = () => {
               <h2 className="text-4xl font-bold mb-6 text-gray-900">Ready to Start Your Fitness Journey?</h2>
               <p className="text-xl text-gray-600 mb-8">Join thousands of satisfied users who have transformed their lives through our platform</p>
               <div className="flex gap-4 justify-center">
-                <Button size="lg" className="bg-purple-600 hover:bg-purple-700">Get Started</Button>
-                <Button size="lg" variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">Learn More</Button>
+                <Button 
+                  size="lg" 
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={handleGetStarted}
+                >
+                  Get Started
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                  onClick={handleLearnMore}
+                >
+                  Learn More
+                </Button>
               </div>
             </div>
           </section>
