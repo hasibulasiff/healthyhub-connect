@@ -69,13 +69,23 @@ const CenterDetail = () => {
         .eq("center_id", id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching reviews:", error);
+        throw error;
+      }
+      
       return data as ReviewWithProfile[];
     },
-    enabled: !!id,
+    enabled: !!id, // Only run query when we have an ID
   });
 
-  if (!id) return <div>Center not found</div>;
+  if (!id) {
+    return (
+      <div className="min-h-screen bg-[#0a0118] flex items-center justify-center">
+        <div className="text-white text-xl">Center not found</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0118]">
