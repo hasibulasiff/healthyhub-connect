@@ -35,6 +35,7 @@ import SchedulePage from "./pages/SchedulePage";
 import PaymentsPage from "./pages/PaymentsPage";
 import BookingsPage from "./pages/BookingsPage";
 import PaymentHistory from "./pages/PaymentHistory";
+import Messages from "./pages/Messages";
 
 const queryClient = new QueryClient();
 
@@ -47,54 +48,56 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Public routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/search" element={<SearchResults />} />
-          <Route path="/center/:id" element={<CenterDetail />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/search" element={<SearchResults />} />
+            <Route path="/center/:id" element={<CenterDetail />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
 
-          {/* Owner Dashboard routes */}
-          <Route element={<DashboardLayout isOwner={true} />}>
-            <Route path="/dashboard" element={<OwnerDashboard />} />
-            <Route path="/listings" element={<ListingManagement />} />
-            <Route path="/analytics" element={<EventAnalytics />} />
-            <Route path="/members" element={<MembersPage />} />
-            <Route path="/schedule" element={<SchedulePage />} />
-            <Route path="/reviews" element={<Review />} />
-            <Route path="/payments" element={<PaymentsPage />} />
-            <Route path="/settings" element={<ProfileSettings />} />
-          </Route>
+            {/* Owner Dashboard routes */}
+            <Route element={<DashboardLayout isOwner={true} />}>
+              <Route path="/dashboard" element={<OwnerDashboard />} />
+              <Route path="/listings" element={<ListingManagement />} />
+              <Route path="/analytics" element={<EventAnalytics />} />
+              <Route path="/members" element={<MembersPage />} />
+              <Route path="/schedule" element={<SchedulePage />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/reviews" element={<Review />} />
+              <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/settings" element={<ProfileSettings />} />
+            </Route>
 
-          {/* User Dashboard routes */}
-          <Route element={<DashboardLayout isOwner={false} />}>
-            <Route path="/user/dashboard" element={<UserDashboard />} />
-            <Route path="/memberships" element={<MembershipPurchase />} />
-            <Route path="/bookings" element={<BookingsPage />} />
-            <Route path="/user/reviews" element={<Review />} />
-            <Route path="/user/payments" element={<PaymentHistory />} />
-            <Route path="/user/settings" element={<ProfileSettings />} />
-          </Route>
+            {/* User Dashboard routes */}
+            <Route element={<DashboardLayout isOwner={false} />}>
+              <Route path="/user/dashboard" element={<UserDashboard />} />
+              <Route path="/memberships" element={<MembershipPurchase />} />
+              <Route path="/bookings" element={<BookingsPage />} />
+              <Route path="/user/messages" element={<Messages />} />
+              <Route path="/user/reviews" element={<Review />} />
+              <Route path="/user/payments" element={<PaymentHistory />} />
+              <Route path="/user/settings" element={<ProfileSettings />} />
+            </Route>
 
-          {/* Ad routes */}
-          <Route path="/ads/place" element={<AdPlacement />} />
-          <Route path="/ads/manage" element={<AdManagement />} />
-          <Route path="/ads/analytics" element={<AdAnalytics />} />
-          <Route path="/ads/payment" element={<AdPayment />} />
-          
-          {/* Notifications */}
-          <Route path="/notifications" element={<Notifications />} />
-          
-          {/* Subscription */}
-          <Route path="/subscription" element={<SubscriptionPricing />} />
-          
-          {/* 404 */}
-          <Route path="*" element={<NotFound />} />
+            {/* Ad routes */}
+            <Route path="/ads/place" element={<AdPlacement />} />
+            <Route path="/ads/manage" element={<AdManagement />} />
+            <Route path="/ads/analytics" element={<AdAnalytics />} />
+            <Route path="/ads/payment" element={<AdPayment />} />
+            
+            {/* Notifications */}
+            <Route path="/notifications" element={<Notifications />} />
+            
+            {/* Subscription */}
+            <Route path="/subscription" element={<SubscriptionPricing />} />
+            
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
