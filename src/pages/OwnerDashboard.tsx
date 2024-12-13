@@ -39,13 +39,15 @@ const OwnerDashboard = () => {
       };
     },
     enabled: Boolean(user?.id),
-    onError: (error: Error) => {
-      console.error('Dashboard stats error:', error);
-      toast({
-        title: "Error loading dashboard",
-        description: "Could not load your dashboard stats. Please try again.",
-        variant: "destructive"
-      });
+    meta: {
+      onError: (error: Error) => {
+        console.error('Dashboard stats error:', error);
+        toast({
+          title: "Error loading dashboard",
+          description: "Could not load your dashboard stats. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   });
 

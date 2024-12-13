@@ -65,7 +65,7 @@ const ListingManagement = () => {
   });
 
   const filteredListings = listings?.filter(listing =>
-    listing.title.toLowerCase().includes(searchTerm.toLowerCase())
+    listing.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (error) {
@@ -126,7 +126,7 @@ const ListingManagement = () => {
               <Card key={listing.id} className="transition-all duration-300 hover:shadow-lg">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xl font-bold">
-                    {listing.title}
+                    {listing.name}
                   </CardTitle>
                   <div className="flex gap-2">
                     <Button 
@@ -153,7 +153,7 @@ const ListingManagement = () => {
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <p className="text-sm font-medium">Status</p>
-                      <p className="text-2xl font-bold">{listing.status || 'Active'}</p>
+                      <p className="text-2xl font-bold">Active</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium">Views</p>
