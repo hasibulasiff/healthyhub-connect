@@ -18,6 +18,7 @@ type ReviewWithProfile = Database['public']['Tables']['reviews']['Row'] & {
   } | null;
 };
 
+// Dummy data for development
 const dummyCenter = {
   id: 1,
   title: "Elite Fitness Center",
@@ -49,6 +50,11 @@ const dummyCenter = {
   }
 };
 
+const isValidUUID = (uuid: string) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
 const CenterDetail = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -56,6 +62,10 @@ const CenterDetail = () => {
     queryKey: ["reviews", id],
     queryFn: async () => {
       if (!id) throw new Error("No center ID provided");
+      if (!isValidUUID(id)) {
+        console.log("Using dummy data - Invalid UUID:", id);
+        return []; // Return empty array for dummy data
+      }
       
       const { data, error } = await supabase
         .from("reviews")
