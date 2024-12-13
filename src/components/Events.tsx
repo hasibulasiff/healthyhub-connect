@@ -159,7 +159,7 @@ const dummyEvents = [
 
 const Events = () => {
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-purple-900 to-[#0a0118]">
+    <section className="py-16 px-4 bg-gradient-to-br from-purple-900/50 via-black/50 to-pink-900/50">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-4 text-white">Upcoming Events</h2>
         <p className="text-white/70 text-center mb-12">Join exciting fitness and wellness events near you</p>
