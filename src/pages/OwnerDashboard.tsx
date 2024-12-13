@@ -3,19 +3,33 @@ import { Activity, DollarSign, Users, Building2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const OwnerDashboard = () => {
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['dashboard-stats'],
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const { data: stats, isLoading, error } = useQuery({
+    queryKey: ['dashboard-stats', user?.id],
     queryFn: async () => {
-      // Fetch real stats from Supabase
-      const { data: centers } = await supabase
+      if (!user?.id) throw new Error('Not authenticated');
+
+      const { data: centers, error: centersError } = await supabase
         .from('centers')
-        .select('id');
+        .select('id')
+        .eq('owner_id', user.id);
       
-      const { data: reviews } = await supabase
+      if (centersError) throw centersError;
+
+      const { data: reviews, error: reviewsError } = await supabase
         .from('reviews')
-        .select('id');
+        .select('id')
+        .in('center_id', centers?.map(c => c.id) || []);
+
+      if (reviewsError) throw reviewsError;
 
       return {
         views: 1234, // This would come from analytics
@@ -23,11 +37,26 @@ const OwnerDashboard = () => {
         members: reviews?.length || 0,
         listings: centers?.length || 0
       };
+    },
+    enabled: Boolean(user?.id),
+    onError: (error: Error) => {
+      console.error('Dashboard stats error:', error);
+      toast({
+        title: "Error loading dashboard",
+        description: "Could not load your dashboard stats. Please try again.",
+        variant: "destructive"
+      });
     }
   });
 
+  // Redirect if not authenticated
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
   const StatCard = ({ title, value, icon: Icon, subtitle }: any) => (
-    <Card>
+    <Card className="transition-all duration-300 hover:shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />
@@ -35,12 +64,14 @@ const OwnerDashboard = () => {
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-7 w-20" />
+        ) : error ? (
+          <div className="text-sm text-destructive">Error loading data</div>
         ) : (
           <>
             <div className="text-2xl font-bold">
               {typeof value === 'number' && title.toLowerCase().includes('revenue') 
                 ? `$${value.toLocaleString()}`
-                : value.toLocaleString()}
+                : value?.toLocaleString() || '0'}
             </div>
             {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
           </>
@@ -91,6 +122,8 @@ const OwnerDashboard = () => {
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-3/4" />
               </div>
+            ) : error ? (
+              <p className="text-sm text-destructive">Error loading activity</p>
             ) : (
               <p className="text-sm text-muted-foreground">No recent activity</p>
             )}
@@ -107,6 +140,8 @@ const OwnerDashboard = () => {
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-3/4" />
               </div>
+            ) : error ? (
+              <p className="text-sm text-destructive">Error loading reviews</p>
             ) : (
               <p className="text-sm text-muted-foreground">No recent reviews</p>
             )}
