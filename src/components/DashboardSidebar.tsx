@@ -17,25 +17,26 @@ import {
   MessageCircle,
   X
 } from "lucide-react";
-import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardSidebarProps {
   isOwner: boolean;
   isMobileOpen?: boolean;
+  isDesktopCollapsed?: boolean;
   onMobileClose?: () => void;
+  onToggleCollapse?: () => void;
 }
 
-const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const DashboardSidebar = ({ 
+  isOwner, 
+  isMobileOpen, 
+  isDesktopCollapsed,
+  onMobileClose, 
+  onToggleCollapse 
+}: DashboardSidebarProps) => {
   const location = useLocation();
-
-  // Reset mobile sidebar state when route changes
-  useEffect(() => {
-    if (onMobileClose) {
-      onMobileClose();
-    }
-  }, [location.pathname]);
+  const isMobile = useIsMobile();
 
   const ownerMenuItems = [
     { icon: LayoutDashboard, label: "Overview", path: "/dashboard" },
@@ -46,10 +47,6 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: MessageSquare, label: "Reviews", path: "/reviews" },
     { icon: CreditCard, label: "Payments", path: "/payments" },
-    { icon: MonitorPlay, label: "Ad Placement", path: "/ads/place" },
-    { icon: ListChecks, label: "Ad Management", path: "/ads/manage" },
-    { icon: PieChart, label: "Ad Analytics", path: "/ads/analytics" },
-    { icon: DollarSign, label: "Ad Payments", path: "/ads/payment" },
     { icon: Settings, label: "Settings", path: "/settings" }
   ];
 
@@ -79,26 +76,30 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
       <aside 
         className={cn(
           "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gradient-to-br from-[#1a1528] to-[#0f0a1e] transition-all duration-300 z-50",
-          isCollapsed ? "w-20" : "w-64",
+          isDesktopCollapsed ? "w-20" : "w-64",
           "lg:translate-x-0",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Mobile Close Button */}
-        <button
-          onClick={onMobileClose}
-          className="absolute right-4 top-4 text-white/70 hover:text-white lg:hidden"
-        >
-          <X size={24} />
-        </button>
+        {isMobile && (
+          <button
+            onClick={onMobileClose}
+            className="absolute right-4 top-4 text-white/70 hover:text-white lg:hidden"
+          >
+            <X size={24} />
+          </button>
+        )}
 
-        {/* Collapse Button */}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 bg-purple-600 rounded-full p-1 text-white hover:bg-purple-700 transition-colors hidden lg:block"
-        >
-          {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
+        {/* Desktop Collapse Button */}
+        {!isMobile && (
+          <button
+            onClick={onToggleCollapse}
+            className="absolute -right-3 top-6 bg-purple-600 rounded-full p-1 text-white hover:bg-purple-700 transition-colors hidden lg:block"
+          >
+            {isDesktopCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+        )}
 
         <nav className="p-4 overflow-y-auto h-full">
           <ul className="space-y-2">
@@ -115,7 +116,7 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
                     onClick={onMobileClose}
                   >
                     <item.icon className="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform" />
-                    {!isCollapsed && (
+                    {!isDesktopCollapsed && (
                       <span className="group-hover:translate-x-1 transition-transform whitespace-nowrap">
                         {item.label}
                       </span>
