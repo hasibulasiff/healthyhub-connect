@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import EventCarousel from "./events/EventCarousel";
-import { Event } from "./events/types";
+import EventCarousel from "./EventCarousel";
+import { Event } from "./types";
 
 const dummyEvents: Event[] = [
   {
@@ -115,17 +115,17 @@ const dummyEvents: Event[] = [
   }
 ];
 
-const Events = () => {
+const EventsSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-16 px-4 bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900">
+    <section className="py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Discover Amazing Events
           </h2>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Join exciting fitness and wellness events near you
           </p>
         </div>
@@ -136,4 +136,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default EventsSection;

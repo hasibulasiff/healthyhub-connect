@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -24,18 +25,26 @@ const faqs = [
   }
 ];
 
-const FAQ = () => {
+const FAQSection = () => {
   return (
-    <section className="py-16 px-4 bg-gray-50">
+    <section className="py-20 px-4 bg-gray-50">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+          Frequently Asked Questions
+        </h2>
+        
         <Accordion type="single" collapsible className="space-y-4">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`} className="bg-white rounded-lg border border-gray-200">
-              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 transition-colors">
-                {faq.question}
+            <AccordionItem 
+              key={index} 
+              value={`item-${index}`}
+              className="bg-white rounded-lg border border-gray-200"
+            >
+              <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                <span className="text-left font-medium text-gray-900">{faq.question}</span>
+                <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-200" />
               </AccordionTrigger>
-              <AccordionContent className="px-6 py-4 text-gray-600">
+              <AccordionContent className="px-6 pb-4 text-gray-600">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
@@ -46,4 +55,4 @@ const FAQ = () => {
   );
 };
 
-export default FAQ;
+export default FAQSection;
