@@ -6,11 +6,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const OwnerDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats', user?.id],
@@ -51,9 +58,7 @@ const OwnerDashboard = () => {
     }
   });
 
-  // Redirect if not authenticated
   if (!user) {
-    navigate('/login');
     return null;
   }
 
