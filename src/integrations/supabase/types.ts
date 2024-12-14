@@ -17,7 +17,6 @@ export type Database = {
           location: string | null
           name: string
           owner_id: string | null
-          type: string | null
         }
         Insert: {
           created_at?: string
@@ -26,7 +25,6 @@ export type Database = {
           location?: string | null
           name: string
           owner_id?: string | null
-          type?: string | null
         }
         Update: {
           created_at?: string
@@ -35,7 +33,6 @@ export type Database = {
           location?: string | null
           name?: string
           owner_id?: string | null
-          type?: string | null
         }
         Relationships: [
           {
