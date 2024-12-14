@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, User, Building2, ChevronDown, Search, MapPin, Calendar, Info, Phone } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Menu, X, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NavLinks } from "./navigation/NavLinks";
+import { CategoryLinks } from "./navigation/CategoryLinks";
+import { UserSwitch } from "./navigation/UserSwitch";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -21,20 +23,6 @@ const Navbar = () => {
     setIsOwner(checked);
     navigate(checked ? '/dashboard' : '/user/dashboard', { replace: true });
   };
-
-  const categories = [
-    { label: "Gyms", path: "/search?category=gyms", icon: Building2 },
-    { label: "Yoga Studios", path: "/search?category=yoga", icon: User },
-    { label: "Sports Centers", path: "/search?category=sports", icon: Calendar },
-    { label: "Wellness Centers", path: "/search?category=wellness", icon: Info },
-  ];
-
-  const quickLinks = [
-    { label: "Find Centers", path: "/search", icon: Search },
-    { label: "Near Me", path: "/search?nearby=true", icon: MapPin },
-    { label: "Events", path: "/search?type=events", icon: Calendar },
-    { label: "Contact", path: "/contact", icon: Phone },
-  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/10 backdrop-blur-md z-50 border-b border-white/10">
@@ -53,15 +41,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             {isLandingPage && (
               <>
-                <div className="flex items-center space-x-2 bg-white/10 p-2 rounded-full">
-                  <User size={20} className={!isOwner ? "text-purple-400" : "text-white/50"} />
-                  <Switch
-                    checked={isOwner}
-                    onCheckedChange={handleSwitchChange}
-                    className="data-[state=checked]:bg-purple-500"
-                  />
-                  <Building2 size={20} className={isOwner ? "text-purple-400" : "text-white/50"} />
-                </div>
+                <UserSwitch isOwner={isOwner} onSwitchChange={handleSwitchChange} />
 
                 {/* Quick Links Dropdown */}
                 <DropdownMenu>
@@ -70,18 +50,7 @@ const Navbar = () => {
                     <ChevronDown className="ml-1 h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white/10 backdrop-blur-md border-white/20">
-                    {quickLinks.map((link) => (
-                      <DropdownMenuItem key={link.label}>
-                        <Link
-                          to={link.path}
-                          className="flex items-center w-full px-2 py-1 text-white/70 hover:text-white"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <link.icon className="mr-2 h-4 w-4" />
-                          {link.label}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
+                    <NavLinks onClose={() => setIsOpen(false)} />
                   </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -92,18 +61,7 @@ const Navbar = () => {
                     <ChevronDown className="ml-1 h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white/10 backdrop-blur-md border-white/20">
-                    {categories.map((category) => (
-                      <DropdownMenuItem key={category.label}>
-                        <Link
-                          to={category.path}
-                          className="flex items-center w-full px-2 py-1 text-white/70 hover:text-white"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <category.icon className="mr-2 h-4 w-4" />
-                          {category.label}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
+                    <CategoryLinks onClose={() => setIsOpen(false)} />
                     <DropdownMenuSeparator className="bg-white/10" />
                     <DropdownMenuItem>
                       <Link
@@ -142,41 +100,12 @@ const Navbar = () => {
         {isOpen && isLandingPage && (
           <div className="md:hidden pb-4 animate-fade-in">
             <div className="flex flex-col space-y-4">
-              <div className="flex items-center justify-center space-x-2 py-2">
-                <User size={20} className={!isOwner ? "text-purple-400" : "text-white/50"} />
-                <Switch
-                  checked={isOwner}
-                  onCheckedChange={handleSwitchChange}
-                  className="data-[state=checked]:bg-purple-500"
-                />
-                <Building2 size={20} className={isOwner ? "text-purple-400" : "text-white/50"} />
+              <div className="flex items-center justify-center py-2">
+                <UserSwitch isOwner={isOwner} onSwitchChange={handleSwitchChange} />
               </div>
               
-              {/* Quick Links Mobile */}
-              {quickLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.path}
-                  className="flex items-center text-white/70 hover:text-white transition-colors justify-center"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <link.icon className="mr-2 h-4 w-4" />
-                  {link.label}
-                </Link>
-              ))}
-              
-              {/* Categories Mobile */}
-              {categories.map((category) => (
-                <Link
-                  key={category.label}
-                  to={category.path}
-                  className="flex items-center text-white/70 hover:text-white transition-colors justify-center"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <category.icon className="mr-2 h-4 w-4" />
-                  {category.label}
-                </Link>
-              ))}
+              <NavLinks onClose={() => setIsOpen(false)} />
+              <CategoryLinks onClose={() => setIsOpen(false)} />
               
               <Link
                 to="/search?sort=trending"
