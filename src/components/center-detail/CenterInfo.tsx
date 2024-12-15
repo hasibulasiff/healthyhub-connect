@@ -1,4 +1,5 @@
 import { MapPin, Star, DollarSign } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface CenterInfoProps {
   title: string;
@@ -11,11 +12,15 @@ interface CenterInfoProps {
 
 const CenterInfo = ({ title, location, rating, reviews, price, description }: CenterInfoProps) => {
   return (
-    <div className="mb-8">
-      <div className="flex justify-between items-start mb-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-lg shadow-lg p-8 mb-8"
+    >
+      <div className="flex justify-between items-start mb-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2 text-white">{title}</h1>
-          <p className="flex items-center text-white/70 gap-2">
+          <h1 className="text-3xl font-bold mb-3 text-gray-900">{title}</h1>
+          <p className="flex items-center text-gray-600 gap-2">
             <MapPin className="w-4 h-4" />
             {location}
           </p>
@@ -23,17 +28,17 @@ const CenterInfo = ({ title, location, rating, reviews, price, description }: Ce
         <div className="text-right">
           <div className="flex items-center gap-1 mb-2">
             <Star className="w-5 h-5 text-yellow-400" fill="currentColor" />
-            <span className="font-semibold text-white">{rating}</span>
-            <span className="text-white/70">({reviews} reviews)</span>
+            <span className="font-semibold text-gray-900">{rating}</span>
+            <span className="text-gray-600">({reviews} reviews)</span>
           </div>
-          <span className="text-white/70 flex items-center justify-end gap-1">
+          <span className="text-gray-600 flex items-center justify-end gap-1">
             <DollarSign className="w-4 h-4" />
             {price}
           </span>
         </div>
       </div>
-      <p className="text-white/70 leading-relaxed">{description}</p>
-    </div>
+      <p className="text-gray-700 leading-relaxed">{description}</p>
+    </motion.div>
   );
 };
 
