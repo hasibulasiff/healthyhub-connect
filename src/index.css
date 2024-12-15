@@ -36,6 +36,26 @@
   }
 }
 
+/* Global page padding */
+.container {
+  @apply px-4 md:px-6 lg:px-8 mx-auto max-w-7xl;
+}
+
+/* Page specific padding */
+.page-container {
+  @apply container py-8 md:py-12;
+}
+
+/* Landing page sections padding */
+.section-padding {
+  @apply py-12 md:py-16 lg:py-20;
+}
+
+/* Content sections padding */
+.content-padding {
+  @apply px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10;
+}
+
 .glass-effect {
   @apply bg-white/10 backdrop-blur-md border-white/20;
 }
@@ -71,7 +91,7 @@ html {
 
 /* Fix header gap */
 .page-padding {
-  @apply pt-20; /* Adds consistent padding for pages with header */
+  @apply pt-24; /* Increased from pt-20 for better spacing below header */
 }
 
 .landing-page {
@@ -89,4 +109,24 @@ html {
 
 .search-result-badge {
   @apply absolute top-2 left-2 bg-accent/90 text-white px-2 py-1 rounded-full text-sm;
+}
+
+/* Card padding */
+.card-padding {
+  @apply p-4 md:p-6 lg:p-8;
+}
+
+/* Form padding */
+.form-padding {
+  @apply p-6 md:p-8 lg:p-10;
+}
+
+/* Section spacing */
+.section-spacing {
+  @apply mb-8 md:mb-12 lg:mb-16;
+}
+
+/* Content spacing */
+.content-spacing {
+  @apply space-y-4 md:space-y-6 lg:space-y-8;
 }
