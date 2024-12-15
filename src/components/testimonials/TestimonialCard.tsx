@@ -19,7 +19,7 @@ const TestimonialCard = ({ name, role, image, quote, delay }: TestimonialCardPro
       whileHover={{ scale: 1.02 }}
       className="h-full"
     >
-      <Card className="h-full bg-white/5 backdrop-blur-lg border-white/10 hover:bg-white/10 transition-all duration-300 group">
+      <Card className="h-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 group">
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center space-y-4">
             <motion.div
@@ -32,7 +32,7 @@ const TestimonialCard = ({ name, role, image, quote, delay }: TestimonialCardPro
               </Avatar>
             </motion.div>
             <motion.p 
-              className="text-gray-300 italic leading-relaxed"
+              className="text-gray-700 italic leading-relaxed"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: delay + 0.2 }}
@@ -41,7 +41,7 @@ const TestimonialCard = ({ name, role, image, quote, delay }: TestimonialCardPro
             </motion.p>
             <div>
               <motion.h3 
-                className="font-semibold text-white"
+                className="font-semibold text-gray-900"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: delay + 0.3 }}
@@ -49,7 +49,7 @@ const TestimonialCard = ({ name, role, image, quote, delay }: TestimonialCardPro
                 {name}
               </motion.h3>
               <motion.p 
-                className="text-sm text-purple-400"
+                className="text-sm text-purple-600"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: delay + 0.4 }}

@@ -6,7 +6,7 @@ const VisionSection = () => {
   
   return (
     <section className="py-20 bg-gradient-to-b from-[#0a0118] to-[#1A1F2C] text-white">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-8 lg:px-16">
         <div className="grid md:grid-cols-2 gap-16">
           <motion.div 
             className="space-y-8"
@@ -46,8 +46,7 @@ const VisionSection = () => {
             </motion.p>
             <div className="grid grid-cols-2 gap-6 mt-8">
               <motion.div 
-                className="bg-[#1A1F2C] p-6 rounded-lg hover:bg-[#252A3A] transition-colors duration-300"
-                whileHover={{ scale: 1.05 }}
+                className="bg-[#1A1F2C] p-6 rounded-lg hover:bg-[#252A3A] transition-colors duration-300 hover:scale-105 transform"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
@@ -57,8 +56,7 @@ const VisionSection = () => {
                 <p className="text-gray-400">Active Users</p>
               </motion.div>
               <motion.div 
-                className="bg-[#1A1F2C] p-6 rounded-lg hover:bg-[#252A3A] transition-colors duration-300"
-                whileHover={{ scale: 1.05 }}
+                className="bg-[#1A1F2C] p-6 rounded-lg hover:bg-[#252A3A] transition-colors duration-300 hover:scale-105 transform"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -71,7 +69,7 @@ const VisionSection = () => {
           </motion.div>
           <div className="space-y-8">
             <motion.div 
-              className="bg-[#1A1F2C] p-8 rounded-lg hover:bg-[#252A3A] transition-colors duration-300"
+              className="bg-[#1A1F2C] p-8 rounded-lg hover:bg-[#252A3A] transition-all duration-300 hover:scale-105 transform"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
@@ -89,7 +87,7 @@ const VisionSection = () => {
               </p>
             </motion.div>
             <motion.div 
-              className="bg-[#1A1F2C] p-8 rounded-lg hover:bg-[#252A3A] transition-colors duration-300"
+              className="bg-[#1A1F2C] p-8 rounded-lg hover:bg-[#252A3A] transition-all duration-300 hover:scale-105 transform"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
