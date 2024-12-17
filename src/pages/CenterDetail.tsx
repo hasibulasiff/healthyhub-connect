@@ -56,7 +56,7 @@ const isValidUUID = (uuid: string) => {
 };
 
 const CenterDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
 
   const { data: reviews, refetch: refetchReviews } = useQuery({
     queryKey: ["reviews", id],
@@ -102,28 +102,13 @@ const CenterDetail = () => {
       <Navbar />
       
       <main className="container mx-auto px-4 py-8 mt-16">
-        <ImageGallery images={dummyCenter.images} title={dummyCenter.title} />
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <CenterInfo
-              title={dummyCenter.title}
-              location={dummyCenter.location}
-              rating={dummyCenter.rating}
-              reviews={dummyCenter.reviews}
-              price={dummyCenter.price}
-              description={dummyCenter.description}
-            />
-
-            <DetailTabs
-              amenities={dummyCenter.amenities}
-              hours={dummyCenter.hours}
-              reviews={reviews}
-              centerId={id}
-              onReviewSuccess={refetchReviews}
-            />
+          {/* Left Column - Image Gallery */}
+          <div className="lg:col-span-2">
+            <ImageGallery images={dummyCenter.images} title={dummyCenter.title} />
           </div>
 
+          {/* Right Column - Contact & Booking */}
           <div className="space-y-6">
             <Card className="bg-white/10 backdrop-blur-md border-white/20">
               <CardHeader>
@@ -150,13 +135,39 @@ const CenterDetail = () => {
                 <Button className="w-full mb-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500">
                   Book Now
                 </Button>
-                <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-white/20 hover:bg-white/10"
+                >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Tour
+                  <span className="text-black dark:text-white">Schedule Tour</span>
                 </Button>
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Center Information */}
+        <div className="mt-8">
+          <CenterInfo
+            title={dummyCenter.title}
+            location={dummyCenter.location}
+            rating={dummyCenter.rating}
+            reviews={dummyCenter.reviews}
+            price={dummyCenter.price}
+            description={dummyCenter.description}
+          />
+        </div>
+
+        {/* Tabs Section */}
+        <div className="mt-8">
+          <DetailTabs
+            amenities={dummyCenter.amenities}
+            hours={dummyCenter.hours}
+            reviews={reviews}
+            centerId={id}
+            onReviewSuccess={refetchReviews}
+          />
         </div>
       </main>
 

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import DashboardLayout from "./layouts/DashboardLayout";
+
 import Index from "./pages/Index";
 import SearchResults from "./pages/SearchResults";
 import CenterDetail from "./pages/CenterDetail";
@@ -37,6 +38,9 @@ import BookingsPage from "./pages/BookingsPage";
 import PaymentHistory from "./pages/PaymentHistory";
 import Messages from "./pages/Messages";
 
+import EventDetail from "./pages/EventDetail";
+import TrainerDetail from "./pages/TrainerDetail";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -51,7 +55,10 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/center/:id" element={<CenterDetail />} />
+            <Route path="/event/:id" element={<EventDetail />} />
+            <Route path="/trainer/:id" element={<TrainerDetail />} />
             <Route path="/about" element={<About />} />
+            
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

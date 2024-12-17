@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Dumbbell, Trophy, Heart, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -8,7 +9,8 @@ const categories = [
     icon: Dumbbell,
     count: 150,
     color: "bg-red-100",
-    iconColor: "text-red-500"
+    iconColor: "text-red-500",
+    type: "gym"
   },
   {
     id: 2,
@@ -16,7 +18,8 @@ const categories = [
     icon: Heart,
     count: 89,
     color: "bg-purple-100",
-    iconColor: "text-purple-500"
+    iconColor: "text-purple-500",
+    type: "yoga"
   },
   {
     id: 3,
@@ -24,7 +27,8 @@ const categories = [
     icon: Trophy,
     count: 120,
     color: "bg-blue-100",
-    iconColor: "text-blue-500"
+    iconColor: "text-blue-500",
+    type: "sports"
   },
   {
     id: 4,
@@ -32,7 +36,8 @@ const categories = [
     icon: Heart,
     count: 95,
     color: "bg-pink-100",
-    iconColor: "text-pink-500"
+    iconColor: "text-pink-500",
+    type: "wellness"
   },
   {
     id: 5,
@@ -40,7 +45,8 @@ const categories = [
     icon: Users,
     count: 45,
     color: "bg-cyan-100",
-    iconColor: "text-cyan-500"
+    iconColor: "text-cyan-500",
+    type: "swimming"
   },
   {
     id: 6,
@@ -48,11 +54,18 @@ const categories = [
     icon: Users,
     count: 200,
     color: "bg-orange-100",
-    iconColor: "text-orange-500"
+    iconColor: "text-orange-500",
+    type: "classes"
   }
 ];
 
 const Categories = () => {
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (type: string) => {
+    navigate(`/search?category=${type}`);
+  };
+
   return (
     <section className="py-16 px-4 bg-gradient-to-b from-purple-900 to-[#0a0118]">
       <div className="max-w-7xl mx-auto">
@@ -64,6 +77,7 @@ const Categories = () => {
             <Card 
               key={category.id} 
               className="hover:shadow-xl transition-all duration-300 cursor-pointer group bg-white/10 backdrop-blur-md border-white/20 hover:border-purple-500/50"
+              onClick={() => handleCategoryClick(category.type)}
             >
               <CardContent className="p-6 flex flex-col items-center text-center">
                 <div className={`${category.color} p-4 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300 bg-gradient-to-br from-purple-600 to-pink-600`}>
