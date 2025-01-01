@@ -30,7 +30,13 @@ const SearchResults = () => {
     queryFn: async () => {
       let queryBuilder = supabase
         .from('centers')
-        .select('*', { count: 'exact' });
+        .select(`
+          *,
+          reviews (
+            rating,
+            id
+          )
+        `);
 
       if (query) {
         queryBuilder = queryBuilder.ilike('name', `%${query}%`);
@@ -52,8 +58,28 @@ const SearchResults = () => {
 
       if (error) throw error;
 
+      // Transform the data to match SearchResultCard props
+      const transformedData = data?.map(center => {
+        const avgRating = center.reviews?.length 
+          ? center.reviews.reduce((acc: number, rev: any) => acc + rev.rating, 0) / center.reviews.length 
+          : undefined;
+
+        return {
+          id: center.id,
+          name: center.name,
+          type: center.type || 'Fitness Center',
+          location: center.location,
+          description: center.description,
+          rating: avgRating,
+          reviews: center.reviews?.length,
+          // You might want to add these fields to your database later
+          sponsored: false,
+          amenities: []
+        };
+      });
+
       return {
-        items: data,
+        items: transformedData || [],
         total: count || 0
       };
     }

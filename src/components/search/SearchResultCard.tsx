@@ -7,15 +7,15 @@ import { toast } from "sonner";
 
 interface SearchResultCardProps {
   result: {
-    id: number;
-    title: string;
+    id: string;
+    name: string;
     type: string;
     sponsored?: boolean;
     rating?: number;
     reviews?: number;
-    location: string;
-    image: string;
-    description: string;
+    location: string | null;
+    image?: string;
+    description: string | null;
     amenities?: string[];
   };
 }
@@ -26,14 +26,17 @@ const SearchResultCard = ({ result }: SearchResultCardProps) => {
     toast.success("Request sent! We'll get back to you soon.");
   };
 
+  // Default image if none provided
+  const defaultImage = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&q=80";
+
   return (
     <Link to={`/center/${result.id}`}>
       <Card className="hover:shadow-lg transition-shadow">
         <div className="flex">
           <div className="w-64 h-48 relative overflow-hidden">
             <img 
-              src={result.image} 
-              alt={result.title}
+              src={result.image || defaultImage} 
+              alt={result.name}
               className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
             />
             {result.sponsored && (
@@ -46,7 +49,7 @@ const SearchResultCard = ({ result }: SearchResultCardProps) => {
           <div className="flex-1 p-6">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-xl font-semibold">{result.title}</h3>
+                <h3 className="text-xl font-semibold">{result.name}</h3>
                 <p className="text-muted-foreground text-sm">{result.type}</p>
               </div>
               {result.rating && (
@@ -61,10 +64,12 @@ const SearchResultCard = ({ result }: SearchResultCardProps) => {
             <div className="mt-4 space-y-2">
               <p className="text-muted-foreground">{result.description}</p>
               
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4" />
-                {result.location}
-              </div>
+              {result.location && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4" />
+                  {result.location}
+                </div>
+              )}
 
               <div className="flex gap-2 mt-2">
                 {result.amenities?.map((amenity, index) => (
