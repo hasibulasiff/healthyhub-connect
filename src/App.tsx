@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import DashboardLayout from "./layouts/DashboardLayout";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 import Index from "./pages/Index";
 import SearchResults from "./pages/SearchResults";
@@ -58,7 +59,6 @@ const App = () => (
             <Route path="/event/:id" element={<EventDetail />} />
             <Route path="/trainer/:id" element={<TrainerDetail />} />
             <Route path="/about" element={<About />} />
-            
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -68,7 +68,13 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
 
             {/* Owner Dashboard routes */}
-            <Route element={<DashboardLayout isOwner={true} />}>
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <DashboardLayout isOwner={true} />
+                </ProtectedRoute>
+              }
+            >
               <Route path="/dashboard" element={<OwnerDashboard />} />
               <Route path="/listings" element={<ListingManagement />} />
               <Route path="/analytics" element={<EventAnalytics />} />
@@ -81,7 +87,13 @@ const App = () => (
             </Route>
 
             {/* User Dashboard routes */}
-            <Route element={<DashboardLayout isOwner={false} />}>
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={['user', 'trainer']}>
+                  <DashboardLayout isOwner={false} />
+                </ProtectedRoute>
+              }
+            >
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/memberships" element={<MembershipPurchase />} />
               <Route path="/bookings" element={<BookingsPage />} />
@@ -91,17 +103,39 @@ const App = () => (
               <Route path="/user/settings" element={<ProfileSettings />} />
             </Route>
 
-            {/* Ad routes */}
-            <Route path="/ads/place" element={<AdPlacement />} />
-            <Route path="/ads/manage" element={<AdManagement />} />
-            <Route path="/ads/analytics" element={<AdAnalytics />} />
-            <Route path="/ads/payment" element={<AdPayment />} />
+            {/* Ad routes - Owner only */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <DashboardLayout isOwner={true} />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/ads/place" element={<AdPlacement />} />
+              <Route path="/ads/manage" element={<AdManagement />} />
+              <Route path="/ads/analytics" element={<AdAnalytics />} />
+              <Route path="/ads/payment" element={<AdPayment />} />
+            </Route>
             
-            {/* Notifications */}
-            <Route path="/notifications" element={<Notifications />} />
+            {/* Protected Notifications */}
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <Notifications />
+                </ProtectedRoute>
+              }
+            />
             
-            {/* Subscription */}
-            <Route path="/subscription" element={<SubscriptionPricing />} />
+            {/* Protected Subscription */}
+            <Route
+              path="/subscription"
+              element={
+                <ProtectedRoute allowedRoles={['owner', 'trainer']}>
+                  <SubscriptionPricing />
+                </ProtectedRoute>
+              }
+            />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

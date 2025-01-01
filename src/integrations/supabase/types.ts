@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          booking_date: string | null
+          center_id: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          booking_date?: string | null
+          center_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          booking_date?: string | null
+          center_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       centers: {
         Row: {
           created_at: string
@@ -86,6 +131,51 @@ export type Database = {
           },
         ]
       }
+      memberships: {
+        Row: {
+          center_id: string | null
+          created_at: string | null
+          end_date: string | null
+          id: string
+          start_date: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          center_id?: string | null
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          center_id?: string | null
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memberships_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memberships_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
@@ -131,20 +221,32 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
+          full_name: string | null
           id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          full_name?: string | null
           id: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          full_name?: string | null
           id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
           username?: string | null
         }
         Relationships: []
@@ -199,7 +301,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "user" | "owner" | "trainer" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -28,6 +28,11 @@ const Login = () => {
 
       if (error) throw error;
 
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+      });
+
       navigate(from, { replace: true });
     } catch (error: any) {
       toast({
