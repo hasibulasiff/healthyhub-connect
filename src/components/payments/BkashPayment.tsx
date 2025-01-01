@@ -42,34 +42,33 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
       setIsProcessing(true);
 
       // Get payment method id for bKash
-      const { data: paymentMethods } = await supabase
+      const { data: paymentMethods, error: methodError } = await supabase
         .from("payment_methods")
-        .select("id")
+        .select("*")
         .eq("name", "bKash")
         .single();
 
-      if (!paymentMethods?.id) {
+      if (methodError || !paymentMethods) {
         throw new Error("Payment method not found");
       }
 
       // Create payment record
-      const { data: payment, error: paymentError } = await supabase
+      const { error: paymentError } = await supabase
         .from("payments")
         .insert({
-          booking_id: bookingId,
           amount: values.amount,
+          booking_id: bookingId,
           payment_method_id: paymentMethods.id,
           transaction_id: `BK${Date.now()}`, // In real implementation, this would come from bKash API
-        })
-        .select()
-        .single();
+          status: "completed",
+        });
 
       if (paymentError) throw paymentError;
 
-      // Update booking payment status
+      // Update booking status
       const { error: bookingError } = await supabase
         .from("bookings")
-        .update({ payment_status: "completed" })
+        .update({ status: "confirmed", payment_status: "completed" })
         .eq("id", bookingId);
 
       if (bookingError) throw bookingError;
