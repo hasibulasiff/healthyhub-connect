@@ -70,7 +70,7 @@ export const handleRoleSwitch = async (userId: string, newRole: string) => {
   try {
     const { error } = await supabase
       .from('profiles')
-      .update({ current_role: newRole })
+      .update({ active_role: newRole })
       .eq('id', userId);
 
     if (error) throw error;

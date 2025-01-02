@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { SearchState } from "@/integrations/supabase/types/database";
 
 interface SearchBarProps {
   sortBy: string;
@@ -23,14 +24,16 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
     if (!user) return;
 
     try {
+      const searchState: SearchState = {
+        query: searchQuery,
+        location,
+        sortBy
+      };
+
       await supabase
         .from('profiles')
         .update({
-          last_search: {
-            query: searchQuery,
-            location,
-            sortBy
-          }
+          last_search: searchState
         })
         .eq('id', user.id);
     } catch (error) {
@@ -51,10 +54,11 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
           .single();
 
         if (profile?.last_search) {
-          setSearchQuery(profile.last_search.query || "");
-          setLocation(profile.last_search.location || "");
-          if (profile.last_search.sortBy) {
-            onSortChange(profile.last_search.sortBy);
+          const lastSearch = profile.last_search as SearchState;
+          setSearchQuery(lastSearch.query || "");
+          setLocation(lastSearch.location || "");
+          if (lastSearch.sortBy) {
+            onSortChange(lastSearch.sortBy);
           }
         }
       } catch (error) {
