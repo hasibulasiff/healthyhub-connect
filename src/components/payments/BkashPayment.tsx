@@ -14,10 +14,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const bkashFormSchema = z.object({
-  phoneNumber: z.string().min(11).max(11),
-  amount: z.number().min(0),
+  phoneNumber: z.string()
+    .min(11, "Phone number must be 11 digits")
+    .max(11, "Phone number must be 11 digits")
+    .regex(/^01[0-9]{9}$/, "Must be a valid bKash number starting with 01"),
+  amount: z.number()
+    .min(1, "Amount must be greater than 0")
+    .max(100000, "Amount cannot exceed ৳100,000"),
 });
 
 interface BkashPaymentProps {
@@ -46,7 +52,7 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
         .from("payment_methods")
         .select("*")
         .eq("name", "bKash")
-        .single();
+        .maybeSingle();
 
       if (methodError || !paymentMethods) {
         throw new Error("Payment method not found");
@@ -111,6 +117,7 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
                   type="number"
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  disabled
                 />
               </FormControl>
               <FormMessage />
@@ -119,7 +126,14 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
         />
 
         <Button type="submit" className="w-full" disabled={isProcessing}>
-          {isProcessing ? "Processing..." : "Pay with bKash"}
+          {isProcessing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing Payment...
+            </>
+          ) : (
+            "Pay with bKash"
+          )}
         </Button>
       </form>
     </Form>

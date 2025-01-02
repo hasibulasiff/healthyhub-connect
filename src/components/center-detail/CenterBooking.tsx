@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Phone, Mail } from "lucide-react";
 import { BookingConfirmation } from "../bookings/BookingConfirmation";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface CenterBookingProps {
   centerId: string;
@@ -17,6 +20,17 @@ interface CenterBookingProps {
 
 export function CenterBooking({ centerId, centerName, contact, price }: CenterBookingProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleBookingClick = () => {
+    if (!user) {
+      toast.error("Please login to make a booking");
+      navigate("/login");
+      return;
+    }
+    setIsDialogOpen(true);
+  };
 
   return (
     <Card className="bg-white/10 backdrop-blur-md border-white/20">
@@ -35,7 +49,10 @@ export function CenterBooking({ centerId, centerName, contact, price }: CenterBo
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full mb-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500">
+            <Button 
+              onClick={handleBookingClick}
+              className="w-full mb-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
+            >
               Book Now
             </Button>
           </DialogTrigger>
@@ -44,6 +61,7 @@ export function CenterBooking({ centerId, centerName, contact, price }: CenterBo
               centerId={centerId}
               centerName={centerName}
               price={price}
+              onSuccess={() => setIsDialogOpen(false)}
             />
           </DialogContent>
         </Dialog>

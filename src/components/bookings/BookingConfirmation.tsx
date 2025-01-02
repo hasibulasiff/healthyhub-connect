@@ -8,38 +8,52 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { BkashPayment } from "../payments/BkashPayment";
 import { useAuth } from "@/contexts/AuthContext";
+import { Loader2 } from "lucide-react";
+import { z } from "zod";
 
 interface BookingConfirmationProps {
   centerId: string;
   centerName: string;
   price: number;
+  onSuccess?: () => void;
 }
 
-export function BookingConfirmation({ centerId, centerName, price }: BookingConfirmationProps) {
+const bookingSchema = z.object({
+  date: z.date({
+    required_error: "Please select a date",
+  }),
+  notes: z.string().optional(),
+});
+
+export function BookingConfirmation({ centerId, centerName, price, onSuccess }: BookingConfirmationProps) {
   const [date, setDate] = useState<Date>();
   const [notes, setNotes] = useState("");
   const [bookingId, setBookingId] = useState<string>();
   const [showPayment, setShowPayment] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
   const handleBooking = async () => {
     try {
-      if (!date) {
-        toast.error("Please select a date");
-        return;
-      }
-
       if (!user) {
         toast.error("Please login to make a booking");
         return;
       }
+
+      const result = bookingSchema.safeParse({ date, notes });
+      if (!result.success) {
+        toast.error(result.error.errors[0].message);
+        return;
+      }
+
+      setIsLoading(true);
 
       const { data: booking, error } = await supabase
         .from("bookings")
         .insert({
           center_id: centerId,
           user_id: user.id,
-          booking_date: date.toISOString(),
+          booking_date: date?.toISOString(),
           notes,
           price,
           status: "pending",
@@ -56,12 +70,14 @@ export function BookingConfirmation({ centerId, centerName, price }: BookingConf
     } catch (error) {
       console.error("Booking error:", error);
       toast.error("Failed to create booking. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handlePaymentSuccess = () => {
     toast.success("Booking confirmed!");
-    // Redirect to bookings page or show success message
+    onSuccess?.();
   };
 
   return (
@@ -79,6 +95,7 @@ export function BookingConfirmation({ centerId, centerName, price }: BookingConf
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md border"
+                disabled={(date) => date < new Date()}
               />
             </div>
 
@@ -106,8 +123,19 @@ export function BookingConfirmation({ centerId, centerName, price }: BookingConf
               </div>
             </div>
 
-            <Button onClick={handleBooking} className="w-full">
-              Proceed to Payment
+            <Button 
+              onClick={handleBooking} 
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Proceed to Payment"
+              )}
             </Button>
           </>
         ) : (
