@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      analytics_metrics: {
+        Row: {
+          center_id: string | null
+          created_at: string | null
+          id: string
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Insert: {
+          center_id?: string | null
+          created_at?: string | null
+          id?: string
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Update: {
+          center_id?: string | null
+          created_at?: string | null
+          id?: string
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_metrics_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           booking_date: string | null
@@ -224,6 +262,50 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          related_id: string | null
+          related_type: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          related_id?: string | null
+          related_type?: string | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          related_id?: string | null
+          related_type?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
           created_at: string | null
@@ -298,31 +380,43 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          email_verified: boolean | null
           full_name: string | null
           id: string
           phone: string | null
           role: Database["public"]["Enums"]["user_role"] | null
+          social_id: string | null
+          social_provider: string | null
           username: string | null
+          verification_token: string | null
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          email_verified?: boolean | null
           full_name?: string | null
           id: string
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          social_id?: string | null
+          social_provider?: string | null
           username?: string | null
+          verification_token?: string | null
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          email_verified?: boolean | null
           full_name?: string | null
           id?: string
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          social_id?: string | null
+          social_provider?: string | null
           username?: string | null
+          verification_token?: string | null
         }
         Relationships: []
       }
@@ -361,6 +455,107 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schedules: {
+        Row: {
+          center_id: string | null
+          created_at: string | null
+          description: string | null
+          end_time: string
+          id: string
+          max_capacity: number | null
+          recurrence_pattern: string | null
+          recurring: boolean | null
+          start_time: string
+          title: string
+          trainer_id: string | null
+        }
+        Insert: {
+          center_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time: string
+          id?: string
+          max_capacity?: number | null
+          recurrence_pattern?: string | null
+          recurring?: boolean | null
+          start_time: string
+          title: string
+          trainer_id?: string | null
+        }
+        Update: {
+          center_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string
+          id?: string
+          max_capacity?: number | null
+          recurrence_pattern?: string | null
+          recurring?: boolean | null
+          start_time?: string
+          title?: string
+          trainer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedules_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedules_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trainer_profiles: {
+        Row: {
+          availability: Json | null
+          bio: string | null
+          certification: string[] | null
+          created_at: string | null
+          experience_years: number | null
+          hourly_rate: number | null
+          id: string
+          specialization: string[] | null
+          user_id: string | null
+        }
+        Insert: {
+          availability?: Json | null
+          bio?: string | null
+          certification?: string[] | null
+          created_at?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id?: string
+          specialization?: string[] | null
+          user_id?: string | null
+        }
+        Update: {
+          availability?: Json | null
+          bio?: string | null
+          certification?: string[] | null
+          created_at?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id?: string
+          specialization?: string[] | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainer_profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
