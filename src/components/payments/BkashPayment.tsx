@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -65,7 +65,7 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
       const { error: paymentError } = await supabase
         .from('payments')
         .insert({
-          amount: values.amount,
+          amount: Number(values.amount),
           booking_id: bookingId,
           payment_method_id: paymentMethods.id,
           status: "completed",

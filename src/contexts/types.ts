@@ -15,6 +15,7 @@ export type UserProfile = {
   social_provider?: string;
   social_id?: string;
   verification_token?: string;
+  created_at?: string;
 };
 
 export type AuthContextType = {
