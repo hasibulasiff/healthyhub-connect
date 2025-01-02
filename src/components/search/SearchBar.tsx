@@ -33,7 +33,7 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
       await supabase
         .from('profiles')
         .update({
-          last_search: searchState
+          last_search: searchState as Json
         })
         .eq('id', user.id);
     } catch (error) {

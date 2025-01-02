@@ -1,6 +1,8 @@
 import { User } from "@supabase/supabase-js";
 import { Json } from "./database";
 
+export type Provider = 'google' | 'facebook' | 'twitter' | 'github' | 'discord' | 'twitch';
+
 export type UserRole = 'user' | 'owner' | 'trainer' | 'admin';
 
 export interface UserProfile {

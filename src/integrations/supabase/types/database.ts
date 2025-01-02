@@ -7,6 +7,7 @@ export type Json =
   | Json[]
 
 export interface SearchState {
+  [key: string]: string | undefined;
   query?: string;
   location?: string;
   sortBy?: string;
