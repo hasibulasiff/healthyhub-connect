@@ -47,6 +47,16 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
     try {
       setIsProcessing(true);
 
+      // Add timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
+        setIsProcessing(false);
+        toast({
+          title: "Payment timeout",
+          description: "Please try again",
+          variant: "destructive",
+        });
+      }, 30000);
+
       // Get payment method id for bKash
       const { data: paymentMethods, error: methodError } = await supabase
         .from("payment_methods")
@@ -65,7 +75,7 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
           amount: values.amount,
           booking_id: bookingId,
           payment_method_id: paymentMethods.id,
-          transaction_id: `BK${Date.now()}`, // In real implementation, this would come from bKash API
+          transaction_id: `BK${Date.now()}`,
           status: "completed",
         });
 
@@ -79,6 +89,7 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
 
       if (bookingError) throw bookingError;
 
+      clearTimeout(timeoutId);
       toast.success("Payment successful!");
       onSuccess();
     } catch (error) {

@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface MainHeaderProps {
   onMenuClick?: () => void;
@@ -69,7 +70,8 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
               </Link>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
+              {user && <NotificationBell />}
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
                   <div className="text-right mr-2">

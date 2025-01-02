@@ -11,6 +11,9 @@ type UserProfile = {
   full_name?: string;
   avatar_url?: string;
   email_verified?: boolean;
+  phone?: string;
+  bio?: string;
+  current_role?: string;
 };
 
 type AuthContextType = {
@@ -18,6 +21,8 @@ type AuthContextType = {
   profile: UserProfile | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  currentRole: string | null;
+  switchRole: (newRole: string) => Promise<void>;
   isOwner: boolean;
   isTrainer: boolean;
   isAdmin: boolean;
@@ -33,6 +38,8 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   signOut: async () => {},
+  currentRole: null,
+  switchRole: async () => {},
   isOwner: false,
   isTrainer: false,
   isAdmin: false,
@@ -49,6 +56,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const [currentRole, setCurrentRole] = useState<string | null>(
+    localStorage.getItem('currentRole')
+  );
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -181,6 +192,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const switchRole = async (newRole: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ current_role: newRole })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setCurrentRole(newRole);
+      toast({
+        title: "Role switched",
+        description: `You are now in ${newRole} mode`,
+      });
+
+      navigate(newRole === 'owner' ? '/dashboard' : '/user/dashboard');
+    } catch (error) {
+      console.error('Error switching role:', error);
+      toast({
+        title: "Error",
+        description: "Failed to switch role",
+        variant: "destructive",
+      });
+    }
+  };
+
   const isOwner = profile?.role === 'owner';
   const isTrainer = profile?.role === 'trainer';
   const isAdmin = profile?.role === 'admin';
@@ -191,6 +230,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       profile, 
       loading, 
       signOut,
+      currentRole,
+      switchRole,
       isOwner,
       isTrainer,
       isAdmin,

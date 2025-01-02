@@ -33,6 +33,9 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const handleBooking = async () => {
     try {
       if (!user) {
@@ -43,6 +46,11 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
       const result = bookingSchema.safeParse({ date, notes });
       if (!result.success) {
         toast.error(result.error.errors[0].message);
+        return;
+      }
+
+      if (date && date < today) {
+        toast.error("Please select a future date");
         return;
       }
 
@@ -95,7 +103,8 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md border"
-                disabled={(date) => date < new Date()}
+                disabled={(date) => date < today}
+                initialFocus
               />
             </div>
 
