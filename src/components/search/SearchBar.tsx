@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { SearchState } from "@/integrations/supabase/types/database";
+import { Json } from "@/integrations/supabase/types/database";
 
 interface SearchBarProps {
   sortBy: string;
