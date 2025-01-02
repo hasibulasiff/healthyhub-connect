@@ -50,18 +50,14 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
       // Add timeout to prevent infinite loading
       const timeoutId = setTimeout(() => {
         setIsProcessing(false);
-        toast({
-          title: "Payment timeout",
-          description: "Please try again",
-          variant: "destructive",
-        });
+        toast("Payment timeout. Please try again");
       }, 30000);
 
       // Get payment method id for bKash
       const { data: paymentMethods, error: methodError } = await supabase
-        .from("payment_methods")
-        .select("*")
-        .eq("name", "bKash")
+        .from('payment_methods')
+        .select('*')
+        .eq('name', 'bKash')
         .maybeSingle();
 
       if (methodError || !paymentMethods) {
@@ -70,7 +66,7 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
 
       // Create payment record
       const { error: paymentError } = await supabase
-        .from("payments")
+        .from('payments')
         .insert({
           amount: values.amount,
           booking_id: bookingId,
@@ -83,18 +79,18 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
 
       // Update booking status
       const { error: bookingError } = await supabase
-        .from("bookings")
+        .from('bookings')
         .update({ status: "confirmed", payment_status: "completed" })
-        .eq("id", bookingId);
+        .eq('id', bookingId);
 
       if (bookingError) throw bookingError;
 
       clearTimeout(timeoutId);
-      toast.success("Payment successful!");
+      toast("Payment successful!");
       onSuccess();
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("Payment failed. Please try again.");
+      toast("Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
