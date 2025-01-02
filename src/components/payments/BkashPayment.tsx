@@ -30,6 +30,7 @@ interface BkashPaymentProps {
 
 export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentTimeout, setPaymentTimeout] = useState<NodeJS.Timeout>();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,11 +45,30 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
     try {
       setIsProcessing(true);
 
-      // Add timeout to prevent infinite loading
+      // Update payment loading state
+      await supabase
+        .from('payments')
+        .update({ loading_state: 'processing' })
+        .eq('booking_id', bookingId);
+
+      // Clear any existing timeout
+      if (paymentTimeout) {
+        clearTimeout(paymentTimeout);
+      }
+
+      // Set new timeout for payment processing
       const timeoutId = setTimeout(() => {
         setIsProcessing(false);
-        toast("Payment timeout. Please try again");
+        toast.error("Payment timeout. Please try again");
+        
+        // Update payment loading state on timeout
+        supabase
+          .from('payments')
+          .update({ loading_state: 'timeout' })
+          .eq('booking_id', bookingId);
       }, 30000);
+
+      setPaymentTimeout(timeoutId);
 
       // Get payment method id for bKash
       const { data: paymentMethods, error: methodError } = await supabase
@@ -70,6 +90,7 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
           payment_method_id: paymentMethods.id,
           status: "completed",
           transaction_id: `BK${Date.now()}`,
+          loading_state: 'completed'
         });
 
       if (paymentError) throw paymentError;
@@ -83,11 +104,17 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
       if (bookingError) throw bookingError;
 
       clearTimeout(timeoutId);
-      toast("Payment successful!");
+      toast.success("Payment successful!");
       onSuccess();
     } catch (error) {
       console.error("Payment error:", error);
-      toast("Payment failed. Please try again.");
+      toast.error("Payment failed. Please try again.");
+      
+      // Update payment loading state on error
+      await supabase
+        .from('payments')
+        .update({ loading_state: 'error' })
+        .eq('booking_id', bookingId);
     } finally {
       setIsProcessing(false);
     }
@@ -142,7 +169,7 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
           {isProcessing ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
+              Processing Payment...
             </>
           ) : (
             "Pay with bKash"

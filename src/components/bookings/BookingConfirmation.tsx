@@ -33,8 +33,16 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
+  // Get today's date with time set to midnight for comparison
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  // Function to check if a date is in the past
+  const isPastDate = (date: Date) => {
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate < today;
+  };
 
   const handleBooking = async () => {
     try {
@@ -49,7 +57,7 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
         return;
       }
 
-      if (date && date < today) {
+      if (date && isPastDate(date)) {
         toast.error("Please select a future date");
         return;
       }
@@ -103,7 +111,7 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md border"
-                disabled={(date) => date < today}
+                disabled={(date) => isPastDate(date)}
                 initialFocus
               />
             </div>

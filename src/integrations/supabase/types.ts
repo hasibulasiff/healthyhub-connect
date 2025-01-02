@@ -106,6 +106,7 @@ export type Database = {
           location: string | null
           name: string
           owner_id: string | null
+          placeholder_image: string | null
           type: string | null
         }
         Insert: {
@@ -115,6 +116,7 @@ export type Database = {
           location?: string | null
           name: string
           owner_id?: string | null
+          placeholder_image?: string | null
           type?: string | null
         }
         Update: {
@@ -124,6 +126,7 @@ export type Database = {
           location?: string | null
           name?: string
           owner_id?: string | null
+          placeholder_image?: string | null
           type?: string | null
         }
         Relationships: [
@@ -174,6 +177,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      form_validation_settings: {
+        Row: {
+          created_at: string | null
+          custom_messages: Json | null
+          form_type: string
+          id: string
+          validation_rules: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_messages?: Json | null
+          form_type: string
+          id?: string
+          validation_rules?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_messages?: Json | null
+          form_type?: string
+          id?: string
+          validation_rules?: Json | null
+        }
+        Relationships: []
       }
       memberships: {
         Row: {
@@ -333,6 +360,7 @@ export type Database = {
           booking_id: string | null
           created_at: string | null
           id: string
+          loading_state: string | null
           payment_method_id: string | null
           status: string | null
           transaction_id: string | null
@@ -343,6 +371,7 @@ export type Database = {
           booking_id?: string | null
           created_at?: string | null
           id?: string
+          loading_state?: string | null
           payment_method_id?: string | null
           status?: string | null
           transaction_id?: string | null
@@ -353,6 +382,7 @@ export type Database = {
           booking_id?: string | null
           created_at?: string | null
           id?: string
+          loading_state?: string | null
           payment_method_id?: string | null
           status?: string | null
           transaction_id?: string | null
@@ -377,44 +407,56 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_role: string | null
           avatar_url: string | null
           bio: string | null
           created_at: string
           email_verified: boolean | null
           full_name: string | null
           id: string
+          last_search: Json | null
+          pagination_state: Json | null
           phone: string | null
           role: Database["public"]["Enums"]["user_role"] | null
           social_id: string | null
           social_provider: string | null
+          theme_preference: string | null
           username: string | null
           verification_token: string | null
         }
         Insert: {
+          active_role?: string | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           email_verified?: boolean | null
           full_name?: string | null
           id: string
+          last_search?: Json | null
+          pagination_state?: Json | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
           social_id?: string | null
           social_provider?: string | null
+          theme_preference?: string | null
           username?: string | null
           verification_token?: string | null
         }
         Update: {
+          active_role?: string | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           email_verified?: boolean | null
           full_name?: string | null
           id?: string
+          last_search?: Json | null
+          pagination_state?: Json | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
           social_id?: string | null
           social_provider?: string | null
+          theme_preference?: string | null
           username?: string | null
           verification_token?: string | null
         }

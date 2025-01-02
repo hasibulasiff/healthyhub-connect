@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, Settings, User, Building2, MessageCircle, Menu } from "lucide-react";
 import {
@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MainHeaderProps {
   onMenuClick?: () => void;
@@ -22,18 +23,49 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, signOut } = useAuth();
+  const { user, profile } = useAuth();
   const [isOwner, setIsOwner] = useState(false);
   const isLandingPage = location.pathname === "/";
 
-  const handleSwitchChange = (checked: boolean) => {
-    setIsOwner(checked);
-    navigate(checked ? '/dashboard' : '/user/dashboard');
+  // Initialize isOwner based on active_role from profile
+  useEffect(() => {
+    if (profile) {
+      setIsOwner(profile.active_role === 'owner');
+    }
+  }, [profile]);
+
+  const handleSwitchChange = async (checked: boolean) => {
+    try {
+      const newRole = checked ? 'owner' : 'user';
+      
+      // Update active_role in profiles table
+      const { error } = await supabase
+        .from('profiles')
+        .update({ active_role: newRole })
+        .eq('id', user?.id);
+
+      if (error) throw error;
+
+      setIsOwner(checked);
+      navigate(checked ? '/dashboard' : '/user/dashboard');
+      
+      toast({
+        title: "Role switched successfully",
+        description: `You are now in ${newRole} mode`,
+      });
+    } catch (error) {
+      console.error('Error switching role:', error);
+      toast({
+        title: "Error switching role",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await supabase.auth.signOut();
       navigate('/');
       toast({
         title: "Signed out successfully",
@@ -75,12 +107,12 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
                   <div className="text-right mr-2">
-                    <p className="text-sm font-medium text-white">{user?.email}</p>
+                    <p className="text-sm font-medium text-white">{profile?.username || user?.email}</p>
                     <p className="text-xs text-white/70">Account Settings</p>
                   </div>
                   <Avatar className="h-8 w-8 ring-2 ring-purple-500/20">
-                    <AvatarImage src={user?.user_metadata?.avatar_url} />
-                    <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={profile?.avatar_url} />
+                    <AvatarFallback>{profile?.username?.[0] || user?.email?.[0].toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56 bg-gradient-to-r from-[#1a1528] to-[#2d1f45] backdrop-blur-md border-white/20">
@@ -120,6 +152,6 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
       </div>
     </header>
   );
-};
+}
 
 export default MainHeader;
