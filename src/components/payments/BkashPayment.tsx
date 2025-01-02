@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,17 +12,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
-const bkashFormSchema = z.object({
-  phoneNumber: z.string()
-    .min(11, "Phone number must be 11 digits")
-    .max(11, "Phone number must be 11 digits")
-    .regex(/^01[0-9]{9}$/, "Must be a valid bKash number starting with 01"),
-  amount: z.number()
-    .min(1, "Amount must be greater than 0")
-    .max(100000, "Amount cannot exceed ৳100,000"),
+const formSchema = z.object({
+  phone: z.string().min(11).max(11),
+  pin: z.string().min(4).max(6),
+  amount: z.string(),
 });
 
 interface BkashPaymentProps {
@@ -32,18 +28,19 @@ interface BkashPaymentProps {
   onSuccess: () => void;
 }
 
-export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps) {
+export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const form = useForm<z.infer<typeof bkashFormSchema>>({
-    resolver: zodResolver(bkashFormSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      phoneNumber: "",
-      amount: amount,
+      phone: "",
+      pin: "",
+      amount: amount.toString(),
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof bkashFormSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsProcessing(true);
 
@@ -71,8 +68,8 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
           amount: values.amount,
           booking_id: bookingId,
           payment_method_id: paymentMethods.id,
-          transaction_id: `BK${Date.now()}`,
           status: "completed",
+          transaction_id: `BK${Date.now()}`,
         });
 
       if (paymentError) throw paymentError;
@@ -101,12 +98,26 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="phoneNumber"
+          name="phone"
           render={({ field }) => (
             <FormItem>
               <FormLabel>bKash Number</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="01XXXXXXXXX" />
+                <Input placeholder="01XXXXXXXXX" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="pin"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>PIN</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Enter PIN" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -120,12 +131,7 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
             <FormItem>
               <FormLabel>Amount (BDT)</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                  disabled
-                />
+                <Input type="number" {...field} readOnly />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -136,7 +142,7 @@ export function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps
           {isProcessing ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing Payment...
+              Processing...
             </>
           ) : (
             "Pay with bKash"
