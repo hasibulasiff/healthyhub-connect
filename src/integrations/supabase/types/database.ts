@@ -16,6 +16,7 @@ export interface SearchState {
 export interface LastSession {
   path: string;
   timestamp: string;
+  [key: string]: Json | undefined;
 }
 
 export interface Database {
@@ -626,3 +627,4 @@ export interface Database {
     }
   }
 }
+
