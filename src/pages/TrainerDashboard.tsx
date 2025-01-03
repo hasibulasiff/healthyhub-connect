@@ -19,13 +19,9 @@ const TrainerDashboard = () => {
     price: "",
   });
 
-  const handleAvailabilityChange = (date: Date | undefined) => {
-    if (date) {
-      setAvailability(prev => 
-        prev.some(d => d.toDateString() === date.toDateString())
-          ? prev.filter(d => d.toDateString() !== date.toDateString())
-          : [...prev, date]
-      );
+  const handleAvailabilityChange = (dates: Date[] | undefined) => {
+    if (dates) {
+      setAvailability(dates);
     }
   };
 

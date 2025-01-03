@@ -41,6 +41,8 @@ import PaymentHistory from "./pages/PaymentHistory";
 import Messages from "./pages/Messages";
 import EventDetail from "./pages/EventDetail";
 import TrainerDetail from "./pages/TrainerDetail";
+import EventManagement from "./pages/EventManagement";
+import TrainerDashboard from "./pages/TrainerDashboard";
 
 const queryClient = new QueryClient();
 
