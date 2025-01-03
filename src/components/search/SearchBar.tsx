@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { SearchState } from "@/integrations/supabase/types/database";
 import { Json } from "@/integrations/supabase/types/database";
 
 interface SearchBarProps {
@@ -15,32 +14,17 @@ interface SearchBarProps {
   initialLocation?: string;
 }
 
+interface SearchState {
+  query: string;
+  location: string;
+  sortBy: string;
+  [key: string]: any;
+}
+
 const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = "" }: SearchBarProps) => {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [location, setLocation] = useState(initialLocation);
   const { user } = useAuth();
-
-  // Save search state to profile
-  const saveSearchState = async () => {
-    if (!user) return;
-
-    try {
-      const searchState: SearchState = {
-        query: searchQuery,
-        location,
-        sortBy
-      };
-
-      await supabase
-        .from('profiles')
-        .update({
-          last_search: searchState as Json
-        })
-        .eq('id', user.id);
-    } catch (error) {
-      console.error('Error saving search state:', error);
-    }
-  };
 
   // Load last search from profile
   useEffect(() => {
@@ -70,8 +54,29 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
     loadLastSearch();
   }, [user]);
 
-  // Save search state when it changes
+  // Save search state to profile
   useEffect(() => {
+    const saveSearchState = async () => {
+      if (!user) return;
+
+      try {
+        const searchState: SearchState = {
+          query: searchQuery,
+          location,
+          sortBy
+        };
+
+        await supabase
+          .from('profiles')
+          .update({
+            last_search: searchState as Json
+          })
+          .eq('id', user.id);
+      } catch (error) {
+        console.error('Error saving search state:', error);
+      }
+    };
+
     const timeoutId = setTimeout(() => {
       saveSearchState();
     }, 1000);
@@ -81,7 +86,7 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
 
   return (
     <div className="mb-8 p-4 rounded-lg glass-effect">
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input 
@@ -91,7 +96,7 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
             className="pl-10"
           />
         </div>
-        <div className="w-64">
+        <div className="w-full md:w-64">
           <Input 
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -99,7 +104,7 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
           />
         </div>
         <Select defaultValue={sortBy} onValueChange={onSortChange}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-gray-800">
@@ -109,7 +114,7 @@ const SearchBar = ({ sortBy, onSortChange, initialQuery = "", initialLocation = 
             <SelectItem value="distance">Nearest</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="secondary">
+        <Button variant="secondary" className="w-full md:w-auto">
           <Filter className="w-4 h-4 mr-2" />
           Filters
         </Button>

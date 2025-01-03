@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, isBefore, startOfDay } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import BkashPayment from "../payments/BkashPayment";
@@ -33,16 +33,7 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
-  // Get today's date with time set to midnight for comparison
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Function to check if a date is in the past
-  const isPastDate = (date: Date) => {
-    const compareDate = new Date(date);
-    compareDate.setHours(0, 0, 0, 0);
-    return compareDate < today;
-  };
+  const today = startOfDay(new Date());
 
   const handleBooking = async () => {
     try {
@@ -57,7 +48,7 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
         return;
       }
 
-      if (date && isPastDate(date)) {
+      if (date && isBefore(date, today)) {
         toast.error("Please select a future date");
         return;
       }
@@ -111,7 +102,7 @@ export function BookingConfirmation({ centerId, centerName, price, onSuccess }: 
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md border"
-                disabled={(date) => isPastDate(date)}
+                disabled={(date) => isBefore(date, today)}
                 initialFocus
               />
             </div>

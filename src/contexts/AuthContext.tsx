@@ -1,10 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, Provider } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { AuthContextType, UserProfile } from "./types";
-import { fetchUserProfile, handleEmailVerification, handlePasswordReset, handleRoleSwitch } from "./authUtils";
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -31,37 +30,73 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.getItem('currentRole')
   );
   const navigate = useNavigate();
+  const location = useLocation();
 
+  // Persist navigation state
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
+    if (user && location.pathname !== '/login') {
+      const sessionData = {
+        path: location.pathname,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Update last session in profile
+      supabase
+        .from('profiles')
+        .update({ last_session: sessionData })
+        .eq('id', user.id)
+        .then(({ error }) => {
+          if (error) console.error('Error updating session:', error);
+        });
+    }
+  }, [user, location.pathname]);
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null);
+  // Enhanced session management
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
       if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
+        setUser(session.user);
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileData) {
+          setProfile(profileData);
+          // Restore last session if available
+          if (profileData.last_session?.path && location.pathname === '/login') {
+            navigate(profileData.last_session.path);
+          }
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          setProfile(profileData);
+        } else {
+          setProfile(null);
+        }
         setLoading(false);
       }
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const fetchProfile = async (userId: string) => {
-    const profileData = await fetchUserProfile(userId);
-    setProfile(profileData);
-    setLoading(false);
-  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -156,9 +191,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signOut,
       currentRole,
       switchRole,
-      isOwner,
-      isTrainer,
-      isAdmin,
+      isOwner: profile?.role === 'owner',
+      isTrainer: profile?.role === 'trainer',
+      isAdmin: profile?.role === 'admin',
       signInWithProvider,
       sendVerificationEmail,
       verifyEmail,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,7 +30,16 @@ interface BkashPaymentProps {
 
 export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaymentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentTimeout, setPaymentTimeout] = useState<NodeJS.Timeout>();
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,24 +60,18 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
         .update({ loading_state: 'processing' })
         .eq('booking_id', bookingId);
 
-      // Clear any existing timeout
-      if (paymentTimeout) {
-        clearTimeout(paymentTimeout);
-      }
-
-      // Set new timeout for payment processing
-      const timeoutId = setTimeout(() => {
+      // Set timeout for payment processing
+      const newTimeoutId = setTimeout(async () => {
         setIsProcessing(false);
         toast.error("Payment timeout. Please try again");
         
-        // Update payment loading state on timeout
-        supabase
+        await supabase
           .from('payments')
           .update({ loading_state: 'timeout' })
           .eq('booking_id', bookingId);
       }, 30000);
 
-      setPaymentTimeout(timeoutId);
+      setTimeoutId(newTimeoutId);
 
       // Get payment method id for bKash
       const { data: paymentMethods, error: methodError } = await supabase
@@ -81,7 +84,7 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
         throw new Error("Payment method not found");
       }
 
-      // Create payment record
+      // Create payment record with transaction tracking
       const { error: paymentError } = await supabase
         .from('payments')
         .insert({
@@ -98,19 +101,21 @@ export default function BkashPayment({ bookingId, amount, onSuccess }: BkashPaym
       // Update booking status
       const { error: bookingError } = await supabase
         .from('bookings')
-        .update({ status: "confirmed", payment_status: "completed" })
+        .update({ 
+          status: "confirmed", 
+          payment_status: "completed" 
+        })
         .eq('id', bookingId);
 
       if (bookingError) throw bookingError;
 
-      clearTimeout(timeoutId);
+      clearTimeout(newTimeoutId);
       toast.success("Payment successful!");
       onSuccess();
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Payment failed. Please try again.");
       
-      // Update payment loading state on error
       await supabase
         .from('payments')
         .update({ loading_state: 'error' })
