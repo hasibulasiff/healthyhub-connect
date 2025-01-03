@@ -39,13 +39,18 @@ export const NotificationPreferences = () => {
       }
 
       if (data?.notification_preferences) {
-        // Ensure the data matches our expected structure
-        const fetchedPrefs = data.notification_preferences as NotificationPreferences;
-        setPreferences({
-          email_notifications: Boolean(fetchedPrefs.email_notifications),
-          push_notifications: Boolean(fetchedPrefs.push_notifications),
-          marketing_emails: Boolean(fetchedPrefs.marketing_emails),
-        });
+        try {
+          const rawPrefs = data.notification_preferences as Record<string, unknown>;
+          const validatedPrefs: NotificationPreferences = {
+            email_notifications: Boolean(rawPrefs.email_notifications ?? defaultPreferences.email_notifications),
+            push_notifications: Boolean(rawPrefs.push_notifications ?? defaultPreferences.push_notifications),
+            marketing_emails: Boolean(rawPrefs.marketing_emails ?? defaultPreferences.marketing_emails),
+          };
+          setPreferences(validatedPrefs);
+        } catch (e) {
+          console.error('Error parsing preferences:', e);
+          setPreferences(defaultPreferences);
+        }
       }
     };
 
