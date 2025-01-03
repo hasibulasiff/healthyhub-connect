@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          center_id: string | null
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          center_id?: string | null
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          center_id?: string | null
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_metrics: {
         Row: {
           center_id: string | null
@@ -201,6 +243,50 @@ export type Database = {
           validation_rules?: Json | null
         }
         Relationships: []
+      }
+      membership_plans: {
+        Row: {
+          center_id: string | null
+          created_at: string | null
+          description: string | null
+          duration_months: number
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+        }
+        Insert: {
+          center_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_months: number
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+        }
+        Update: {
+          center_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_months?: number
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membership_plans_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       memberships: {
         Row: {
@@ -420,6 +506,7 @@ export type Database = {
           interests: string[] | null
           last_search: Json | null
           last_session: Json | null
+          notification_preferences: Json | null
           pagination_state: Json | null
           payment_details: Json | null
           phone: string | null
@@ -445,6 +532,7 @@ export type Database = {
           interests?: string[] | null
           last_search?: Json | null
           last_session?: Json | null
+          notification_preferences?: Json | null
           pagination_state?: Json | null
           payment_details?: Json | null
           phone?: string | null
@@ -470,6 +558,7 @@ export type Database = {
           interests?: string[] | null
           last_search?: Json | null
           last_session?: Json | null
+          notification_preferences?: Json | null
           pagination_state?: Json | null
           payment_details?: Json | null
           phone?: string | null

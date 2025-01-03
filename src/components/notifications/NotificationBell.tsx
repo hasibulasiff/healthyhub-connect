@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
+import { subscribeToNotifications } from "@/services/notificationService";
 
 export const NotificationBell = () => {
   const { user } = useAuth();
@@ -41,26 +42,14 @@ export const NotificationBell = () => {
 
     fetchNotifications();
 
-    // Subscribe to new notifications
-    const channel = supabase
-      .channel('notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          setNotifications(prev => [payload.new, ...prev]);
-          setUnreadCount(prev => prev + 1);
-        }
-      )
-      .subscribe();
+    // Subscribe to real-time notifications
+    const unsubscribe = subscribeToNotifications(user.id, (newNotification) => {
+      setNotifications(prev => [newNotification, ...prev]);
+      setUnreadCount(prev => prev + 1);
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      unsubscribe();
     };
   }, [user]);
 
@@ -86,6 +75,9 @@ export const NotificationBell = () => {
         break;
       case 'message':
         navigate('/messages');
+        break;
+      case 'membership':
+        navigate('/memberships');
         break;
       default:
         navigate('/notifications');
