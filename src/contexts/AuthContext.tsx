@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { AuthContextType, UserProfile, Provider } from "./auth/types";
 import { handleRoleSwitch, handleEmailVerification, handlePasswordReset } from "./auth/authUtils";
+import { LastSession } from "@/integrations/supabase/types/database";
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (user && location.pathname !== '/login') {
-      const sessionData = {
+      const sessionData: LastSession = {
         path: location.pathname,
         timestamp: new Date().toISOString()
       };
@@ -65,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (profileData) {
           const typedProfile: UserProfile = {
             ...profileData,
-            last_session: profileData.last_session as { path: string; timestamp: string } | null
+            last_session: profileData.last_session as LastSession | null
           };
           setProfile(typedProfile);
           if (typedProfile.last_session?.path && location.pathname === '/login') {
@@ -91,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (profileData) {
             const typedProfile: UserProfile = {
               ...profileData,
-              last_session: profileData.last_session as { path: string; timestamp: string } | null
+              last_session: profileData.last_session as LastSession | null
             };
             setProfile(typedProfile);
           }
@@ -153,7 +154,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       const typedProfile: UserProfile = {
         ...data,
-        last_session: data.last_session as { path: string; timestamp: string } | null
+        last_session: data.last_session as LastSession | null
       };
       setProfile(typedProfile);
       

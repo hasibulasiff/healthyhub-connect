@@ -13,6 +13,11 @@ export interface SearchState {
   sortBy?: string;
 }
 
+export interface LastSession {
+  path: string;
+  timestamp: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -348,7 +353,7 @@ export interface Database {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
-          name?: string
+          name: string
         }
         Relationships: []
       }
@@ -421,10 +426,7 @@ export interface Database {
           theme_preference: string | null
           username: string | null
           verification_token: string | null
-          last_session?: {
-            path: string;
-            timestamp: string;
-          };
+          last_session?: LastSession | null;
         }
         Insert: {
           active_role?: string | null
@@ -443,10 +445,7 @@ export interface Database {
           theme_preference?: string | null
           username?: string | null
           verification_token?: string | null
-          last_session?: {
-            path: string;
-            timestamp: string;
-          };
+          last_session?: LastSession | null;
         }
         Update: {
           active_role?: string | null
@@ -465,10 +464,7 @@ export interface Database {
           theme_preference?: string | null
           username?: string | null
           verification_token?: string | null
-          last_session?: {
-            path: string;
-            timestamp: string;
-          };
+          last_session?: LastSession | null;
         }
         Relationships: []
       }
@@ -630,4 +626,3 @@ export interface Database {
     }
   }
 }
-

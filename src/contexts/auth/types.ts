@@ -1,15 +1,12 @@
 import { User } from "@supabase/supabase-js";
-import { Database } from "@/integrations/supabase/types/database";
+import { Database, LastSession } from "@/integrations/supabase/types/database";
 
 export type Provider = 'google' | 'facebook' | 'twitter' | 'github' | 'discord' | 'twitch';
 
 type ProfilesRow = Database['public']['Tables']['profiles']['Row'];
 
 export interface UserProfile extends Omit<ProfilesRow, 'last_session'> {
-  last_session?: {
-    path: string;
-    timestamp: string;
-  } | null;
+  last_session?: LastSession | null;
 }
 
 export interface AuthContextType {
