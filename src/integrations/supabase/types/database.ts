@@ -1,5 +1,3 @@
-import { Json } from "./database";
-
 export type Json =
   | string
   | number
@@ -632,3 +630,4 @@ export interface Database {
     }
   }
 }
+

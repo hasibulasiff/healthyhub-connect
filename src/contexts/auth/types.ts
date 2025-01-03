@@ -1,29 +1,15 @@
 import { User } from "@supabase/supabase-js";
-import { Json } from "@/integrations/supabase/types/database";
+import { Database } from "@/integrations/supabase/types/database";
 
 export type Provider = 'google' | 'facebook' | 'twitter' | 'github' | 'discord' | 'twitch';
 
-export interface UserProfile {
-  id: string;
-  username?: string;
-  avatar_url?: string;
-  created_at: string;
-  role?: 'user' | 'owner' | 'trainer' | 'admin';
-  full_name?: string;
-  phone?: string;
-  bio?: string;
-  email_verified?: boolean;
-  verification_token?: string;
-  social_provider?: string;
-  social_id?: string;
-  active_role?: string;
-  last_search?: Json;
-  theme_preference?: string;
-  pagination_state?: Json;
+type ProfilesRow = Database['public']['Tables']['profiles']['Row'];
+
+export interface UserProfile extends Omit<ProfilesRow, 'last_session'> {
   last_session?: {
     path: string;
     timestamp: string;
-  };
+  } | null;
 }
 
 export interface AuthContextType {

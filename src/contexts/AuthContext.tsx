@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Persist navigation state
   useEffect(() => {
     if (user && location.pathname !== '/login') {
       const sessionData = {
@@ -41,7 +40,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         timestamp: new Date().toISOString()
       };
       
-      // Update last session in profile
       supabase
         .from('profiles')
         .update({ last_session: sessionData })
@@ -52,7 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user, location.pathname]);
 
-  // Enhanced session management
   useEffect(() => {
     const initializeAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -66,9 +63,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .single();
 
         if (profileData) {
-          setProfile(profileData as UserProfile);
-          if (profileData.last_session?.path && location.pathname === '/login') {
-            navigate(profileData.last_session.path);
+          const typedProfile: UserProfile = {
+            ...profileData,
+            last_session: profileData.last_session as { path: string; timestamp: string } | null
+          };
+          setProfile(typedProfile);
+          if (typedProfile.last_session?.path && location.pathname === '/login') {
+            navigate(typedProfile.last_session.path);
           }
         }
       }
@@ -87,7 +88,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             .eq('id', session.user.id)
             .single();
           
-          setProfile(profileData as UserProfile);
+          if (profileData) {
+            const typedProfile: UserProfile = {
+              ...profileData,
+              last_session: profileData.last_session as { path: string; timestamp: string } | null
+            };
+            setProfile(typedProfile);
+          }
         } else {
           setProfile(null);
         }
@@ -143,7 +150,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .single();
 
       if (error) throw error;
-      setProfile(data as UserProfile);
+      
+      const typedProfile: UserProfile = {
+        ...data,
+        last_session: data.last_session as { path: string; timestamp: string } | null
+      };
+      setProfile(typedProfile);
+      
       toast({
         description: "Email verified successfully.",
       });
