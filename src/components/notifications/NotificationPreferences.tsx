@@ -6,14 +6,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { updateNotificationPreferences } from "@/services/notificationService";
 
+interface NotificationPreferences {
+  email_notifications: boolean;
+  push_notifications: boolean;
+  marketing_emails: boolean;
+}
+
+const defaultPreferences: NotificationPreferences = {
+  email_notifications: true,
+  push_notifications: true,
+  marketing_emails: false,
+};
+
 export const NotificationPreferences = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [preferences, setPreferences] = useState({
-    email_notifications: true,
-    push_notifications: true,
-    marketing_emails: false,
-  });
+  const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences);
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -31,14 +39,20 @@ export const NotificationPreferences = () => {
       }
 
       if (data?.notification_preferences) {
-        setPreferences(data.notification_preferences);
+        // Ensure the data matches our expected structure
+        const fetchedPrefs = data.notification_preferences as NotificationPreferences;
+        setPreferences({
+          email_notifications: Boolean(fetchedPrefs.email_notifications),
+          push_notifications: Boolean(fetchedPrefs.push_notifications),
+          marketing_emails: Boolean(fetchedPrefs.marketing_emails),
+        });
       }
     };
 
     fetchPreferences();
   }, [user]);
 
-  const handlePreferenceChange = async (key: string, value: boolean) => {
+  const handlePreferenceChange = async (key: keyof NotificationPreferences, value: boolean) => {
     if (!user) return;
 
     const newPreferences = { ...preferences, [key]: value };
