@@ -85,6 +85,8 @@ const App = () => (
               <Route path="/reviews" element={<Review />} />
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/settings" element={<ProfileSettings />} />
+              <Route path="/events/manage" element={<EventManagement />} />
+              <Route path="/ads/manage" element={<AdManagement />} />
             </Route>
 
             {/* User Dashboard routes */}
@@ -104,20 +106,17 @@ const App = () => (
               <Route path="/user/settings" element={<ProfileSettings />} />
             </Route>
 
-            {/* Ad routes - Owner only */}
+            {/* Trainer Dashboard routes */}
             <Route
               element={
-                <ProtectedRoute allowedRoles={['owner']}>
-                  <DashboardLayout isOwner={true} />
+                <ProtectedRoute allowedRoles={['trainer']}>
+                  <DashboardLayout isOwner={false} />
                 </ProtectedRoute>
               }
             >
-              <Route path="/ads/place" element={<AdPlacement />} />
-              <Route path="/ads/manage" element={<AdManagement />} />
-              <Route path="/ads/analytics" element={<AdAnalytics />} />
-              <Route path="/ads/payment" element={<AdPayment />} />
+              <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
             </Route>
-            
+
             {/* Protected Notifications */}
             <Route
               path="/notifications"

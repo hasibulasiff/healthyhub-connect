@@ -15,7 +15,9 @@ import {
   PieChart,
   DollarSign,
   MessageCircle,
-  X
+  X,
+  CalendarRange,
+  FileEdit
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -30,7 +32,6 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
-  // Reset mobile sidebar state when route changes
   useEffect(() => {
     if (onMobileClose) {
       onMobileClose();
@@ -40,17 +41,24 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
   const ownerMenuItems = [
     { icon: LayoutDashboard, label: "Overview", path: "/dashboard" },
     { icon: Building2, label: "Listings", path: "/listings" },
+    { icon: FileEdit, label: "Event Management", path: "/events/manage" },
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
     { icon: Users, label: "Members", path: "/members" },
     { icon: Calendar, label: "Schedule", path: "/schedule" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: MessageSquare, label: "Reviews", path: "/reviews" },
     { icon: CreditCard, label: "Payments", path: "/payments" },
-    { icon: MonitorPlay, label: "Ad Placement", path: "/ads/place" },
-    { icon: ListChecks, label: "Ad Management", path: "/ads/manage" },
-    { icon: PieChart, label: "Ad Analytics", path: "/ads/analytics" },
-    { icon: DollarSign, label: "Ad Payments", path: "/ads/payment" },
+    { icon: MonitorPlay, label: "Ad Management", path: "/ads/manage" },
     { icon: Settings, label: "Settings", path: "/settings" }
+  ];
+
+  const trainerMenuItems = [
+    { icon: LayoutDashboard, label: "Overview", path: "/trainer/dashboard" },
+    { icon: CalendarRange, label: "Availability", path: "/trainer/availability" },
+    { icon: Users, label: "My Clients", path: "/trainer/clients" },
+    { icon: MessageCircle, label: "Messages", path: "/user/messages" },
+    { icon: CreditCard, label: "Payments", path: "/user/payments" },
+    { icon: Settings, label: "Settings", path: "/user/settings" }
   ];
 
   const userMenuItems = [
@@ -63,11 +71,10 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
     { icon: Settings, label: "Settings", path: "/user/settings" }
   ];
 
-  const menuItems = isOwner ? ownerMenuItems : userMenuItems;
+  const menuItems = isOwner ? ownerMenuItems : location.pathname.startsWith('/trainer') ? trainerMenuItems : userMenuItems;
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isMobileOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -75,7 +82,6 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
         />
       )}
       
-      {/* Sidebar */}
       <aside 
         className={cn(
           "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gradient-to-br from-[#1a1528] to-[#0f0a1e] transition-all duration-300 z-50",
@@ -84,7 +90,6 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Mobile Close Button */}
         <button
           onClick={onMobileClose}
           className="absolute right-4 top-4 text-white/70 hover:text-white lg:hidden"
@@ -92,7 +97,6 @@ const DashboardSidebar = ({ isOwner, isMobileOpen, onMobileClose }: DashboardSid
           <X size={24} />
         </button>
 
-        {/* Collapse Button */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="absolute -right-3 top-6 bg-purple-600 rounded-full p-1 text-white hover:bg-purple-700 transition-colors hidden lg:block"
