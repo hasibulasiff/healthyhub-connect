@@ -244,6 +244,54 @@ export type Database = {
         }
         Relationships: []
       }
+      membership_analytics: {
+        Row: {
+          center_id: string | null
+          created_at: string | null
+          id: string
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          plan_id: string | null
+        }
+        Insert: {
+          center_id?: string | null
+          created_at?: string | null
+          id?: string
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          plan_id?: string | null
+        }
+        Update: {
+          center_id?: string | null
+          created_at?: string | null
+          id?: string
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+          plan_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membership_analytics_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "membership_analytics_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "membership_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       membership_plans: {
         Row: {
           center_id: string | null
@@ -255,6 +303,8 @@ export type Database = {
           is_active: boolean | null
           name: string
           price: number
+          total_revenue: number | null
+          total_subscribers: number | null
         }
         Insert: {
           center_id?: string | null
@@ -266,6 +316,8 @@ export type Database = {
           is_active?: boolean | null
           name: string
           price: number
+          total_revenue?: number | null
+          total_subscribers?: number | null
         }
         Update: {
           center_id?: string | null
@@ -277,6 +329,8 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           price?: number
+          total_revenue?: number | null
+          total_subscribers?: number | null
         }
         Relationships: [
           {
