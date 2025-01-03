@@ -1,3 +1,5 @@
+import { Json } from "./database";
+
 export type Json =
   | string
   | number
@@ -188,7 +190,7 @@ export interface Database {
           created_at?: string | null
           custom_messages?: Json | null
           form_type: string
-          id?: string
+          id: string
           validation_rules?: Json | null
         }
         Update: {
@@ -421,6 +423,10 @@ export interface Database {
           theme_preference: string | null
           username: string | null
           verification_token: string | null
+          last_session?: {
+            path: string;
+            timestamp: string;
+          };
         }
         Insert: {
           active_role?: string | null
@@ -439,6 +445,10 @@ export interface Database {
           theme_preference?: string | null
           username?: string | null
           verification_token?: string | null
+          last_session?: {
+            path: string;
+            timestamp: string;
+          };
         }
         Update: {
           active_role?: string | null
@@ -457,6 +467,10 @@ export interface Database {
           theme_preference?: string | null
           username?: string | null
           verification_token?: string | null
+          last_session?: {
+            path: string;
+            timestamp: string;
+          };
         }
         Relationships: []
       }
@@ -521,7 +535,7 @@ export interface Database {
           created_at?: string | null
           description?: string | null
           end_time: string
-          id?: string
+          id: string
           max_capacity?: number | null
           recurrence_pattern?: string | null
           recurring?: boolean | null

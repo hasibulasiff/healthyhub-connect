@@ -3,7 +3,8 @@ import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { AuthContextType, UserProfile } from "./types";
+import { AuthContextType, UserProfile, Provider } from "./auth/types";
+import { handleRoleSwitch, handleEmailVerification, handlePasswordReset } from "./auth/authUtils";
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -66,7 +67,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (profileData) {
           setProfile(profileData);
-          // Restore last session if available
           if (profileData.last_session?.path && location.pathname === '/login') {
             navigate(profileData.last_session.path);
           }
@@ -191,9 +191,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signOut,
       currentRole,
       switchRole,
-      isOwner: profile?.role === 'owner',
-      isTrainer: profile?.role === 'trainer',
-      isAdmin: profile?.role === 'admin',
+      isOwner,
+      isTrainer,
+      isAdmin,
       signInWithProvider,
       sendVerificationEmail,
       verifyEmail,

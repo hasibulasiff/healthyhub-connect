@@ -410,14 +410,21 @@ export type Database = {
           active_role: string | null
           avatar_url: string | null
           bio: string | null
+          business_address: string | null
+          business_name: string | null
+          business_type: string | null
           created_at: string
           email_verified: boolean | null
           full_name: string | null
           id: string
+          interests: string[] | null
           last_search: Json | null
+          last_session: Json | null
           pagination_state: Json | null
+          payment_details: Json | null
           phone: string | null
           role: Database["public"]["Enums"]["user_role"] | null
+          services_offered: string[] | null
           social_id: string | null
           social_provider: string | null
           theme_preference: string | null
@@ -428,14 +435,21 @@ export type Database = {
           active_role?: string | null
           avatar_url?: string | null
           bio?: string | null
+          business_address?: string | null
+          business_name?: string | null
+          business_type?: string | null
           created_at?: string
           email_verified?: boolean | null
           full_name?: string | null
           id: string
+          interests?: string[] | null
           last_search?: Json | null
+          last_session?: Json | null
           pagination_state?: Json | null
+          payment_details?: Json | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          services_offered?: string[] | null
           social_id?: string | null
           social_provider?: string | null
           theme_preference?: string | null
@@ -446,14 +460,21 @@ export type Database = {
           active_role?: string | null
           avatar_url?: string | null
           bio?: string | null
+          business_address?: string | null
+          business_name?: string | null
+          business_type?: string | null
           created_at?: string
           email_verified?: boolean | null
           full_name?: string | null
           id?: string
+          interests?: string[] | null
           last_search?: Json | null
+          last_session?: Json | null
           pagination_state?: Json | null
+          payment_details?: Json | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          services_offered?: string[] | null
           social_id?: string | null
           social_provider?: string | null
           theme_preference?: string | null
