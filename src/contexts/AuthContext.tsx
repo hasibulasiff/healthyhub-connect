@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .single();
 
         if (profileData) {
-          setProfile(profileData);
+          setProfile(profileData as UserProfile);
           if (profileData.last_session?.path && location.pathname === '/login') {
             navigate(profileData.last_session.path);
           }
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             .eq('id', session.user.id)
             .single();
           
-          setProfile(profileData);
+          setProfile(profileData as UserProfile);
         } else {
           setProfile(null);
         }
@@ -143,7 +143,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .single();
 
       if (error) throw error;
-      setProfile(data);
+      setProfile(data as UserProfile);
       toast({
         description: "Email verified successfully.",
       });
