@@ -1,3 +1,4 @@
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -44,108 +45,119 @@ import TrainerDetail from "./pages/TrainerDetail";
 import EventManagement from "./pages/EventManagement";
 import TrainerDashboard from "./pages/TrainerDashboard";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
-const App = () => (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/center/:id" element={<CenterDetail />} />
-            <Route path="/event/:id" element={<EventDetail />} />
-            <Route path="/trainer/:id" element={<TrainerDetail />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
+const App = () => {
+  return (
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Index />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/center/:id" element={<CenterDetail />} />
+                <Route path="/event/:id" element={<EventDetail />} />
+                <Route path="/trainer/:id" element={<TrainerDetail />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
 
-            {/* Owner Dashboard routes */}
-            <Route
-              element={
-                <ProtectedRoute allowedRoles={['owner']}>
-                  <DashboardLayout isOwner={true} />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/dashboard" element={<OwnerDashboard />} />
-              <Route path="/listings" element={<ListingManagement />} />
-              <Route path="/analytics" element={<EventAnalytics />} />
-              <Route path="/members" element={<MembersPage />} />
-              <Route path="/schedule" element={<SchedulePage />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/reviews" element={<Review />} />
-              <Route path="/payments" element={<PaymentsPage />} />
-              <Route path="/settings" element={<ProfileSettings />} />
-              <Route path="/events/manage" element={<EventManagement />} />
-              <Route path="/ads/manage" element={<AdManagement />} />
-            </Route>
+                {/* Owner Dashboard routes */}
+                <Route
+                  element={
+                    <ProtectedRoute allowedRoles={['owner']}>
+                      <DashboardLayout isOwner={true} />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/dashboard" element={<OwnerDashboard />} />
+                  <Route path="/listings" element={<ListingManagement />} />
+                  <Route path="/analytics" element={<EventAnalytics />} />
+                  <Route path="/members" element={<MembersPage />} />
+                  <Route path="/schedule" element={<SchedulePage />} />
+                  <Route path="/messages" element={<Messages />} />
+                  <Route path="/reviews" element={<Review />} />
+                  <Route path="/payments" element={<PaymentsPage />} />
+                  <Route path="/settings" element={<ProfileSettings />} />
+                  <Route path="/events/manage" element={<EventManagement />} />
+                  <Route path="/ads/manage" element={<AdManagement />} />
+                </Route>
 
-            {/* User Dashboard routes */}
-            <Route
-              element={
-                <ProtectedRoute allowedRoles={['user', 'trainer']}>
-                  <DashboardLayout isOwner={false} />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/user/dashboard" element={<UserDashboard />} />
-              <Route path="/memberships" element={<MembershipPurchase />} />
-              <Route path="/bookings" element={<BookingsPage />} />
-              <Route path="/user/messages" element={<Messages />} />
-              <Route path="/user/reviews" element={<Review />} />
-              <Route path="/user/payments" element={<PaymentHistory />} />
-              <Route path="/user/settings" element={<ProfileSettings />} />
-            </Route>
+                {/* User Dashboard routes */}
+                <Route
+                  element={
+                    <ProtectedRoute allowedRoles={['user', 'trainer']}>
+                      <DashboardLayout isOwner={false} />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/user/dashboard" element={<UserDashboard />} />
+                  <Route path="/memberships" element={<MembershipPurchase />} />
+                  <Route path="/bookings" element={<BookingsPage />} />
+                  <Route path="/user/messages" element={<Messages />} />
+                  <Route path="/user/reviews" element={<Review />} />
+                  <Route path="/user/payments" element={<PaymentHistory />} />
+                  <Route path="/user/settings" element={<ProfileSettings />} />
+                </Route>
 
-            {/* Trainer Dashboard routes */}
-            <Route
-              element={
-                <ProtectedRoute allowedRoles={['trainer']}>
-                  <DashboardLayout isOwner={false} />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
-            </Route>
+                {/* Trainer Dashboard routes */}
+                <Route
+                  element={
+                    <ProtectedRoute allowedRoles={['trainer']}>
+                      <DashboardLayout isOwner={false} />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
+                </Route>
 
-            {/* Protected Notifications */}
-            <Route
-              path="/notifications"
-              element={
-                <ProtectedRoute>
-                  <Notifications />
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Protected Subscription */}
-            <Route
-              path="/subscription"
-              element={
-                <ProtectedRoute allowedRoles={['owner', 'trainer']}>
-                  <SubscriptionPricing />
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
-);
+                {/* Protected Notifications */}
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute>
+                      <Notifications />
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* Protected Subscription */}
+                <Route
+                  path="/subscription"
+                  element={
+                    <ProtectedRoute allowedRoles={['owner', 'trainer']}>
+                      <SubscriptionPricing />
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </TooltipProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </React.StrictMode>
+  );
+};
 
 export default App;
