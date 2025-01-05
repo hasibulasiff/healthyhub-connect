@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, CreditCard, Star, Clock, Award } from "lucide-react";
+import { Calendar, CreditCard, Star, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,7 +42,6 @@ const UserDashboard = () => {
         memberships: memberships?.length || 0,
         upcomingClasses: bookings?.length || 0,
         reviews: reviews?.length || 0,
-        achievements: 0, // Placeholder until achievements table is created
         recentBookings: bookings || [],
       };
     },
@@ -79,9 +78,9 @@ const UserDashboard = () => {
           isLoading={isLoading}
         />
         <MetricCard
-          title="Achievements"
-          value={stats?.achievements || 0}
-          icon={Award}
+          title="Total Activities"
+          value={(stats?.upcomingClasses || 0) + (stats?.reviews || 0)}
+          icon={Clock}
           isLoading={isLoading}
         />
       </div>

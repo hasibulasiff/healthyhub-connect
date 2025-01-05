@@ -13,7 +13,7 @@ import { DashboardChart } from "@/components/dashboard/DashboardChart";
 const TrainerDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['trainer-dashboard-stats', user?.id],
@@ -39,9 +39,10 @@ const TrainerDashboard = () => {
       // Calculate metrics
       const totalSessions = schedule?.length || 0;
       const averageRating = 4.5; // This would come from reviews
+      const activeClients = 0; // This would come from a proper count query
 
       return {
-        activeClients: trainerProfile?.total_clients || 0,
+        activeClients,
         upcomingSessions: totalSessions,
         rating: averageRating,
         revenueGrowth: 10,
@@ -141,7 +142,7 @@ const TrainerDashboard = () => {
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={(date) => date && setDate(date)}
+                onSelect={setDate}
                 className="rounded-md border"
               />
             </CardContent>
