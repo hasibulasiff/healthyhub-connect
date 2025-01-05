@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogOut, Settings, User, Building2, MessageCircle, Menu } from "lucide-react";
+import { LogOut, Settings, User, Building2, MessageCircle, Menu, Calendar, Heart } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -27,7 +27,6 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
   const [isOwner, setIsOwner] = useState(false);
   const isLandingPage = location.pathname === "/";
 
-  // Initialize isOwner based on active_role from profile
   useEffect(() => {
     if (profile) {
       setIsOwner(profile.active_role === 'owner');
@@ -38,7 +37,6 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
     try {
       const newRole = checked ? 'owner' : 'user';
       
-      // Update active_role in profiles table
       const { error } = await supabase
         .from('profiles')
         .update({ active_role: newRole })
@@ -91,6 +89,7 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
               <button
                 onClick={onMenuClick}
                 className="lg:hidden text-white/70 hover:text-white transition-colors"
+                aria-label="Toggle menu"
               >
                 <Menu className="h-6 w-6" />
               </button>
@@ -99,6 +98,15 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
                 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent hover:from-pink-400 hover:to-purple-400 transition-all duration-300"
               >
                 HealthyThako
+              </Link>
+            </div>
+
+            <div className="hidden md:flex items-center space-x-4">
+              <Link to={isOwner ? "/bookings" : "/user/bookings"} className="text-white/70 hover:text-white transition-colors">
+                <Calendar className="h-5 w-5" />
+              </Link>
+              <Link to="/favorites" className="text-white/70 hover:text-white transition-colors">
+                <Heart className="h-5 w-5" />
               </Link>
             </div>
 
@@ -152,6 +160,6 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
       </div>
     </header>
   );
-}
+};
 
 export default MainHeader;
