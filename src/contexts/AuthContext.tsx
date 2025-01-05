@@ -1,221 +1,124 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { AuthContextType, UserProfile, Provider } from "./auth/types";
-import { handleRoleSwitch, handleEmailVerification, handlePasswordReset } from "./auth/authUtils";
-import { LastSession } from "@/integrations/supabase/types/database";
+import { AuthContextType, UserProfile } from "./auth/types";
+import { authReducer } from "./auth/authReducer";
+import { initialAuthState } from "./auth/authState";
+import { ErrorBoundary } from "react-error-boundary";
+import { Loader2 } from "lucide-react";
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  profile: null,
-  loading: true,
-  signOut: async () => {},
-  currentRole: null,
-  switchRole: async () => {},
-  isOwner: false,
-  isTrainer: false,
-  isAdmin: false,
-  signInWithProvider: async () => {},
-  sendVerificationEmail: async () => {},
-  verifyEmail: async () => {},
-  sendPasswordReset: async () => {},
-  resetPassword: async () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [currentRole, setCurrentRole] = useState<string | null>(
-    localStorage.getItem('currentRole')
-  );
+  const [state, dispatch] = useReducer(authReducer, initialAuthState);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (user && location.pathname !== '/login') {
-      const sessionData: LastSession = {
-        path: location.pathname,
-        timestamp: new Date().toISOString()
-      };
-      
-      supabase
-        .from('profiles')
-        .update({ last_session: sessionData })
-        .eq('id', user.id)
-        .then(({ error }) => {
-          if (error) console.error('Error updating session:', error);
-        });
-    }
-  }, [user, location.pathname]);
-
-  useEffect(() => {
     const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        setUser(session.user);
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+      try {
+        dispatch({ type: "SET_LOADING", payload: true });
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          dispatch({ type: "SET_USER", payload: session.user });
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-        if (profileData) {
-          const typedProfile: UserProfile = {
-            ...profileData,
-            last_session: profileData.last_session as LastSession | null
-          };
-          setProfile(typedProfile);
-          if (typedProfile.last_session?.path && location.pathname === '/login') {
-            navigate(typedProfile.last_session.path);
+          if (profileError) throw profileError;
+
+          if (profileData) {
+            dispatch({ type: "SET_PROFILE", payload: profileData });
+            dispatch({ type: "SET_ROLE", payload: profileData.active_role });
           }
         }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        dispatch({ type: "SET_ERROR", payload: error as Error });
+        toast({
+          title: "Authentication Error",
+          description: "Failed to initialize authentication",
+          variant: "destructive",
+        });
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: false });
       }
-      setLoading(false);
     };
 
     initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
-        setUser(session?.user ?? null);
         if (session?.user) {
-          const { data: profileData } = await supabase
+          dispatch({ type: "SET_USER", payload: session.user });
+          const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();
-          
-          if (profileData) {
-            const typedProfile: UserProfile = {
-              ...profileData,
-              last_session: profileData.last_session as LastSession | null
-            };
-            setProfile(typedProfile);
+
+          if (profileError) {
+            console.error('Profile fetch error:', profileError);
+            toast({
+              title: "Error",
+              description: "Failed to fetch user profile",
+              variant: "destructive",
+            });
+          } else if (profileData) {
+            dispatch({ type: "SET_PROFILE", payload: profileData });
+            dispatch({ type: "SET_ROLE", payload: profileData.active_role });
           }
         } else {
-          setProfile(null);
+          dispatch({ type: "RESET_STATE" });
         }
-        setLoading(false);
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
+  const value = {
+    user: state.user,
+    profile: state.profile,
+    loading: state.loading,
+    error: state.error,
+    currentRole: state.currentRole,
+    isOwner: state.profile?.role === 'owner',
+    isTrainer: state.profile?.role === 'trainer',
+    isAdmin: state.profile?.role === 'admin',
   };
 
-  const signInWithProvider = async (provider: Provider) => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      toast({
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const switchRole = async (newRole: string) => {
-    if (!user) return;
-    const success = await handleRoleSwitch(user.id, newRole);
-    if (success) {
-      setCurrentRole(newRole);
-      navigate(newRole === 'owner' ? '/dashboard' : '/user/dashboard');
-    }
-  };
-
-  const sendVerificationEmail = async () => {
-    if (!user?.email) return;
-    await handleEmailVerification(user.email, crypto.randomUUID());
-  };
-
-  const verifyEmail = async (token: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ email_verified: true, verification_token: null })
-        .eq('verification_token', token)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      const typedProfile: UserProfile = {
-        ...data,
-        last_session: data.last_session as LastSession | null
-      };
-      setProfile(typedProfile);
-      
-      toast({
-        description: "Email verified successfully.",
-      });
-    } catch (error) {
-      console.error('Error verifying email:', error);
-      toast({
-        description: "Failed to verify email.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const sendPasswordReset = async (email: string) => {
-    await handlePasswordReset(email);
-  };
-
-  const resetPassword = async (token: string, newPassword: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) throw error;
-      toast({
-        description: "Password reset successful.",
-      });
-    } catch (error) {
-      console.error('Error resetting password:', error);
-      toast({
-        description: "Failed to reset password.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const isOwner = profile?.role === 'owner';
-  const isTrainer = profile?.role === 'trainer';
-  const isAdmin = profile?.role === 'admin';
+  if (state.loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      profile, 
-      loading, 
-      signOut,
-      currentRole,
-      switchRole,
-      isOwner,
-      isTrainer,
-      isAdmin,
-      signInWithProvider,
-      sendVerificationEmail,
-      verifyEmail,
-      sendPasswordReset,
-      resetPassword,
-    }}>
-      {children}
-    </AuthContext.Provider>
+    <ErrorBoundary
+      fallback={
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <h2 className="text-xl font-semibold mb-4">Something went wrong</h2>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-white rounded-md"
+          >
+            Retry
+          </button>
+        </div>
+      }
+    >
+      <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    </ErrorBoundary>
   );
 };
 
