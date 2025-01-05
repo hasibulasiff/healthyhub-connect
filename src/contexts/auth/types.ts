@@ -1,9 +1,15 @@
 import { User } from "@supabase/supabase-js";
-import { Database, LastSession } from "@/integrations/supabase/types/database";
+import { Database } from "@/integrations/supabase/types/database";
 
 export type Provider = 'google' | 'facebook' | 'twitter' | 'github' | 'discord' | 'twitch';
 
 type ProfilesRow = Database['public']['Tables']['profiles']['Row'];
+
+export interface LastSession {
+  timestamp: string;
+  activity: string;
+  device?: string;
+}
 
 export interface UserProfile extends Omit<ProfilesRow, 'last_session'> {
   last_session?: LastSession | null;
@@ -13,12 +19,13 @@ export interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-  signOut: () => Promise<void>;
+  error: Error | null;
   currentRole: string | null;
-  switchRole: (newRole: string) => Promise<void>;
   isOwner: boolean;
   isTrainer: boolean;
   isAdmin: boolean;
+  signOut: () => Promise<void>;
+  switchRole: (newRole: string) => Promise<void>;
   signInWithProvider: (provider: Provider) => Promise<void>;
   sendVerificationEmail: () => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;

@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { User } from "@supabase/supabase-js";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { AuthContextType, UserProfile } from "./auth/types";
+import { AuthContextType, UserProfile, Provider } from "./auth/types";
 import { authReducer } from "./auth/authReducer";
 import { initialAuthState } from "./auth/authState";
 import { ErrorBoundary } from "react-error-boundary";
@@ -14,7 +14,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -33,8 +32,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (profileError) throw profileError;
 
           if (profileData) {
-            dispatch({ type: "SET_PROFILE", payload: profileData });
-            dispatch({ type: "SET_ROLE", payload: profileData.active_role });
+            const userProfile: UserProfile = {
+              ...profileData,
+              last_session: profileData.last_session ? JSON.parse(profileData.last_session as string) : null
+            };
+            dispatch({ type: "SET_PROFILE", payload: userProfile });
+            dispatch({ type: "SET_ROLE", payload: userProfile.active_role });
           }
         }
       } catch (error) {
@@ -70,8 +73,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               variant: "destructive",
             });
           } else if (profileData) {
-            dispatch({ type: "SET_PROFILE", payload: profileData });
-            dispatch({ type: "SET_ROLE", payload: profileData.active_role });
+            const userProfile: UserProfile = {
+              ...profileData,
+              last_session: profileData.last_session ? JSON.parse(profileData.last_session as string) : null
+            };
+            dispatch({ type: "SET_PROFILE", payload: userProfile });
+            dispatch({ type: "SET_ROLE", payload: userProfile.active_role });
           }
         } else {
           dispatch({ type: "RESET_STATE" });
@@ -84,7 +91,71 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const value = {
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const switchRole = async (newRole: string) => {
+    if (!state.user?.id) return;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ active_role: newRole })
+        .eq('id', state.user.id);
+
+      if (error) throw error;
+      dispatch({ type: "SET_ROLE", payload: newRole });
+    } catch (error) {
+      console.error('Role switch error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to switch role",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const signInWithProvider = async (provider: Provider) => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({ provider });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Sign in error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to sign in",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const sendVerificationEmail = async () => {
+    // Implementation
+  };
+
+  const verifyEmail = async (token: string) => {
+    // Implementation
+  };
+
+  const sendPasswordReset = async (email: string) => {
+    // Implementation
+  };
+
+  const resetPassword = async (token: string, newPassword: string) => {
+    // Implementation
+  };
+
+  const value: AuthContextType = {
     user: state.user,
     profile: state.profile,
     loading: state.loading,
@@ -93,6 +164,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     isOwner: state.profile?.role === 'owner',
     isTrainer: state.profile?.role === 'trainer',
     isAdmin: state.profile?.role === 'admin',
+    signOut,
+    switchRole,
+    signInWithProvider,
+    sendVerificationEmail,
+    verifyEmail,
+    sendPasswordReset,
+    resetPassword,
   };
 
   if (state.loading) {
