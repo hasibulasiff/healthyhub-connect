@@ -36,10 +36,17 @@ const TrainerDashboard = () => {
         .eq('user_id', user.id)
         .single();
 
+      // Calculate active clients based on unique clients in schedules
+      const { data: uniqueClients } = await supabase
+        .from('schedules')
+        .select('DISTINCT user_id')
+        .eq('trainer_id', user.id)
+        .gte('start_time', new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString());
+
       // Calculate metrics
       const totalSessions = schedule?.length || 0;
       const averageRating = 4.5; // This would come from reviews
-      const activeClients = 0; // This would come from a proper count query
+      const activeClients = uniqueClients?.length || 0;
 
       return {
         activeClients,
