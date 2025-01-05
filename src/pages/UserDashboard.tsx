@@ -38,17 +38,11 @@ const UserDashboard = () => {
         .select('*')
         .eq('user_id', user.id);
 
-      // Fetch achievements
-      const { data: achievements } = await supabase
-        .from('achievements')
-        .select('*')
-        .eq('user_id', user.id);
-
       return {
         memberships: memberships?.length || 0,
         upcomingClasses: bookings?.length || 0,
         reviews: reviews?.length || 0,
-        achievements: achievements?.length || 0,
+        achievements: 0, // Placeholder until achievements table is created
         recentBookings: bookings || [],
       };
     },

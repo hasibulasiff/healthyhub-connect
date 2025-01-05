@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          achieved_at: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          achieved_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          achieved_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           center_id: string | null
@@ -54,8 +92,12 @@ export type Database = {
       analytics_metrics: {
         Row: {
           center_id: string | null
+          comparison_period_end: string | null
+          comparison_period_start: string | null
+          comparison_value: number | null
           created_at: string | null
           id: string
+          metric_category: string | null
           metric_type: string
           metric_value: number
           period_end: string
@@ -63,8 +105,12 @@ export type Database = {
         }
         Insert: {
           center_id?: string | null
+          comparison_period_end?: string | null
+          comparison_period_start?: string | null
+          comparison_value?: number | null
           created_at?: string | null
           id?: string
+          metric_category?: string | null
           metric_type: string
           metric_value: number
           period_end: string
@@ -72,8 +118,12 @@ export type Database = {
         }
         Update: {
           center_id?: string | null
+          comparison_period_end?: string | null
+          comparison_period_start?: string | null
+          comparison_value?: number | null
           created_at?: string | null
           id?: string
+          metric_category?: string | null
           metric_type?: string
           metric_value?: number
           period_end?: string
@@ -175,6 +225,48 @@ export type Database = {
           {
             foreignKeyName: "centers_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_progress: {
+        Row: {
+          client_id: string | null
+          id: string
+          metrics: Json
+          notes: string | null
+          recorded_at: string | null
+          trainer_id: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          id?: string
+          metrics: Json
+          notes?: string | null
+          recorded_at?: string | null
+          trainer_id?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          id?: string
+          metrics?: Json
+          notes?: string | null
+          recorded_at?: string | null
+          trainer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_progress_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_progress_trainer_id_fkey"
+            columns: ["trainer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
