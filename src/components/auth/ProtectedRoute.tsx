@@ -1,47 +1,38 @@
-import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/ui/use-toast';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: string[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles = [] }) => {
+const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, loading, role } = useAuth();
   const location = useLocation();
-  const { toast } = useToast();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      toast({
-        title: 'Authentication required',
-        description: 'Please sign in to access this page.',
-        variant: 'destructive',
-      });
-    } else if (!loading && user && allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
-      toast({
-        title: 'Access denied',
-        description: 'You do not have permission to access this page.',
-        variant: 'destructive',
-      });
-    }
-  }, [loading, user, role, allowedRoles.length, toast]);
-
+  // Public routes that don't require authentication
+  const publicRoutes = ['/', '/login', '/register'];
+  
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
         <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
       </div>
     );
   }
 
+  // Allow access to public routes without authentication
+  if (publicRoutes.includes(location.pathname)) {
+    return <>{children}</>;
+  }
+
+  // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
+  // Check role-based access
+  if (allowedRoles && !allowedRoles.includes(role || '')) {
     return <Navigate to="/dashboard" replace />;
   }
 

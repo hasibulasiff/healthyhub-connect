@@ -61,10 +61,12 @@ function App() {
           <ThemeProvider attribute="class" defaultTheme="light">
             <AuthProvider>
               <Routes>
+                {/* Public routes */}
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 
+                {/* Protected routes */}
                 <Route
                   path="/dashboard"
                   element={
