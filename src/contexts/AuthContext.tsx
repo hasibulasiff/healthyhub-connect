@@ -3,22 +3,14 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-
-interface AuthContextType {
-  session: Session | null;
-  user: User | null;
-  loading: boolean;
-  error: Error | null;
-  signOut: () => Promise<void>;
-  role: string | null;
-  setRole: (role: string) => void;
-}
+import { AuthContextType, UserProfile } from './auth/types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [role, setRole] = useState<string | null>(null);
@@ -66,9 +58,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             variant: 'destructive',
           });
         } else {
+          setProfile(profile);
           setRole(profile?.active_role || profile?.role || 'user');
         }
       } else {
+        setProfile(null);
         setRole(null);
       }
 
@@ -119,14 +113,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const sendPasswordReset = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({
+        title: "Password reset email sent",
+        description: "Check your email for the reset link",
+      });
+    } catch (error) {
+      console.error('Error sending password reset:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send reset email",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const resetPassword = async (token: string, newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      if (error) throw error;
+      toast({
+        title: "Password updated",
+        description: "Your password has been successfully reset",
+      });
+      navigate('/login');
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to reset password",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const verifyEmail = async (token: string) => {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'email'
+      });
+      if (error) throw error;
+      toast({
+        title: "Email verified",
+        description: "Your email has been successfully verified",
+      });
+      navigate('/login');
+    } catch (error) {
+      console.error('Error verifying email:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to verify email",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   const value = {
     session,
     user,
+    profile,
     loading,
     error,
     signOut,
     role,
     setRole,
+    sendPasswordReset,
+    resetPassword,
+    verifyEmail,
   };
 
   return (
