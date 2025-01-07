@@ -1,72 +1,43 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
-import { ErrorBoundary } from "react-error-boundary";
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
-type ProtectedRouteProps = {
+interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: ('user' | 'owner' | 'trainer' | 'admin')[];
-};
-
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-  </div>
-);
-
-const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
-  <div className="flex flex-col items-center justify-center min-h-screen p-4">
-    <h2 className="text-xl font-semibold mb-4">Error loading protected route</h2>
-    <p className="text-sm text-gray-600 mb-4">{error.message}</p>
-    <button
-      onClick={resetErrorBoundary}
-      className="px-4 py-2 bg-primary text-white rounded-md"
-    >
-      Try again
-    </button>
-  </div>
-);
+  allowedRoles?: string[];
+}
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { user, profile, loading, error } = useAuth();
+  const { user, loading, role } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    if (!loading && !error && user) {
-      sessionStorage.setItem('lastRoute', location.pathname);
-      sessionStorage.setItem('lastSearch', location.search);
-    }
-  }, [user, location, loading, error]);
-
-  if (loading) {
-    return <LoadingFallback />;
+  // Public routes that don't require authentication
+  const publicRoutes = ['/', '/login', '/register'];
+  
+  // If it's a public route, render immediately without waiting for auth
+  if (publicRoutes.includes(location.pathname)) {
+    return <>{children}</>;
   }
 
-  if (error) {
-    console.error('Protected route error:', error);
+  // Show loading only for protected routes
+  if (loading && !publicRoutes.includes(location.pathname)) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated and trying to access protected route
+  if (!user && !publicRoutes.includes(location.pathname)) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!user) {
-    sessionStorage.setItem('redirectAfterLogin', `${location.pathname}${location.search}`);
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  // Check role-based access for protected routes
+  if (allowedRoles && !allowedRoles.includes(role || '')) {
+    return <Navigate to="/dashboard" replace />;
   }
 
-  if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {
-    const lastValidRoute = sessionStorage.getItem('lastRoute') || '/';
-    const lastSearch = sessionStorage.getItem('lastSearch') || '';
-    return <Navigate to={`${lastValidRoute}${lastSearch}`} replace />;
-  }
-
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => window.location.reload()}
-    >
-      {children}
-    </ErrorBoundary>
-  );
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

@@ -1,61 +1,63 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
-import { ErrorBoundary } from "react-error-boundary";
-import { Loader2 } from "lucide-react";
-import MainHeader from "@/components/MainHeader";
-import DashboardSidebar from "@/components/DashboardSidebar";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { Suspense } from 'react';
+import { Outlet } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
+import DashboardSidebar from '@/components/DashboardSidebar';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/ui/use-toast';
 
-interface DashboardLayoutProps {
-  isOwner: boolean;
-}
+const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
+  const { toast } = useToast();
 
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-  </div>
-);
-
-const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
-  <div className="flex flex-col items-center justify-center min-h-screen p-4">
-    <h2 className="text-xl font-semibold mb-4">Dashboard Error</h2>
-    <p className="text-sm text-gray-600 mb-4">{error.message}</p>
-    <button
-      onClick={resetErrorBoundary}
-      className="px-4 py-2 bg-primary text-white rounded-md"
-    >
-      Retry
-    </button>
-  </div>
-);
-
-const DashboardLayout = ({ isOwner }: DashboardLayoutProps) => {
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const { loading } = useAuth();
-
-  if (loading) {
-    return <LoadingFallback />;
-  }
+  React.useEffect(() => {
+    toast({
+      title: 'Error',
+      description: error.message,
+      variant: 'destructive',
+    });
+  }, [error, toast]);
 
   return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => window.location.reload()}
-    >
-      <div className="min-h-screen bg-background">
-        <MainHeader onMenuClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} />
-        <DashboardSidebar 
-          isOwner={isOwner} 
-          isMobileOpen={isMobileSidebarOpen}
-          onMobileClose={() => setIsMobileSidebarOpen(false)}
-        />
-        <main className="transition-all duration-300 pt-24 lg:ml-64 p-8">
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Outlet />
-          </ErrorBoundary>
-        </main>
-      </div>
-    </ErrorBoundary>
+    <div className="flex h-screen flex-col items-center justify-center p-4">
+      <h2 className="mb-4 text-2xl font-bold text-red-600">Something went wrong</h2>
+      <p className="mb-4 text-gray-600">{error.message}</p>
+      <button
+        onClick={resetErrorBoundary}
+        className="rounded bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"
+      >
+        Try again
+      </button>
+    </div>
+  );
+};
+
+const LoadingFallback = () => (
+  <div className="flex h-screen items-center justify-center">
+    <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+  </div>
+);
+
+const DashboardLayout = () => {
+  const { role } = useAuth();
+  const isOwner = role === 'owner';
+
+  return (
+    <div className="flex min-h-screen">
+      <DashboardSidebar isOwner={isOwner} />
+      <main className="flex-1 overflow-x-hidden bg-gray-50 p-4">
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}
+          onReset={() => {
+            window.location.reload();
+          }}
+        >
+          <Suspense fallback={<LoadingFallback />}>
+            <div className="container mx-auto">
+              <Outlet context={{ role }} />
+            </div>
+          </Suspense>
+        </ErrorBoundary>
+      </main>
+    </div>
   );
 };
 
