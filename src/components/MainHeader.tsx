@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogOut, Settings, User, Building2, MessageCircle, Menu, Calendar, Heart } from "lucide-react";
+import { LogOut, Settings, User, Building2, MessageCircle, Menu, Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -78,7 +78,8 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
     }
   };
 
-  if (isLandingPage) return null;
+  // Hide MainHeader on landing page
+  if (isLandingPage || !user) return null;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10">
@@ -101,17 +102,8 @@ const MainHeader = ({ onMenuClick }: MainHeaderProps) => {
               </Link>
             </div>
 
-            <div className="hidden md:flex items-center space-x-4">
-              <Link to={isOwner ? "/bookings" : "/user/bookings"} className="text-white/70 hover:text-white transition-colors">
-                <Calendar className="h-5 w-5" />
-              </Link>
-              <Link to="/favorites" className="text-white/70 hover:text-white transition-colors">
-                <Heart className="h-5 w-5" />
-              </Link>
-            </div>
-
             <div className="flex items-center gap-4">
-              {user && <NotificationBell />}
+              <NotificationBell />
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
                   <div className="text-right mr-2">
