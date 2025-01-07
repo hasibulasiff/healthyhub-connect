@@ -3,7 +3,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { AuthContextType, UserProfile } from './auth/types';
+import { AuthContextType, UserProfile, LastSession } from './auth/types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -58,6 +58,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             variant: 'destructive',
           });
         } else {
+          // Parse last_session if it exists
+          let parsedLastSession: LastSession | null = null;
+          if (profileData.last_session) {
+            try {
+              const lastSession = typeof profileData.last_session === 'string' 
+                ? JSON.parse(profileData.last_session)
+                : profileData.last_session;
+                
+              if (lastSession && typeof lastSession === 'object') {
+                parsedLastSession = {
+                  timestamp: lastSession.timestamp || new Date().toISOString(),
+                  activity: lastSession.activity || 'login',
+                  device: lastSession.device || undefined
+                };
+              }
+            } catch (e) {
+              console.error('Error parsing last_session:', e);
+            }
+          }
+
           // Ensure all UserProfile properties are present
           const fullProfile: UserProfile = {
             id: profileData.id,
@@ -76,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             last_search: profileData.last_search || null,
             theme_preference: profileData.theme_preference || 'light',
             pagination_state: profileData.pagination_state || null,
-            last_session: profileData.last_session || null
+            last_session: parsedLastSession
           };
           
           setProfile(fullProfile);
