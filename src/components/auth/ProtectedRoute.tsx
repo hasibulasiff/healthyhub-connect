@@ -13,7 +13,13 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   // Public routes that don't require authentication
   const publicRoutes = ['/', '/login', '/register'];
   
-  if (loading) {
+  // If it's a public route, render immediately without waiting for auth
+  if (publicRoutes.includes(location.pathname)) {
+    return <>{children}</>;
+  }
+
+  // Show loading only for protected routes
+  if (loading && !publicRoutes.includes(location.pathname)) {
     return (
       <div className="flex h-screen items-center justify-center bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
         <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
@@ -21,17 +27,12 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     );
   }
 
-  // Allow access to public routes without authentication
-  if (publicRoutes.includes(location.pathname)) {
-    return <>{children}</>;
-  }
-
-  // Redirect to login if not authenticated
-  if (!user) {
+  // Redirect to login if not authenticated and trying to access protected route
+  if (!user && !publicRoutes.includes(location.pathname)) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check role-based access
+  // Check role-based access for protected routes
   if (allowedRoles && !allowedRoles.includes(role || '')) {
     return <Navigate to="/dashboard" replace />;
   }
