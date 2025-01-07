@@ -44,9 +44,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (session?.user) {
         // Fetch user profile and role
-        const { data: profile, error: profileError } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('role, active_role')
+          .select('*')
           .eq('id', session.user.id)
           .single();
 
@@ -58,8 +58,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             variant: 'destructive',
           });
         } else {
-          setProfile(profile);
-          setRole(profile?.active_role || profile?.role || 'user');
+          // Ensure all UserProfile properties are present
+          const fullProfile: UserProfile = {
+            id: profileData.id,
+            username: profileData.username || null,
+            avatar_url: profileData.avatar_url || null,
+            created_at: profileData.created_at || new Date().toISOString(),
+            role: profileData.role || 'user',
+            full_name: profileData.full_name || null,
+            phone: profileData.phone || null,
+            bio: profileData.bio || null,
+            email_verified: profileData.email_verified || false,
+            verification_token: profileData.verification_token || null,
+            social_provider: profileData.social_provider || null,
+            social_id: profileData.social_id || null,
+            active_role: profileData.active_role || profileData.role || 'user',
+            last_search: profileData.last_search || null,
+            theme_preference: profileData.theme_preference || 'light',
+            pagination_state: profileData.pagination_state || null,
+            last_session: profileData.last_session || null
+          };
+          
+          setProfile(fullProfile);
+          setRole(fullProfile.active_role);
         }
       } else {
         setProfile(null);
