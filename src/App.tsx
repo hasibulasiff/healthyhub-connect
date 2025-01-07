@@ -7,6 +7,7 @@ import { ThemeProvider } from 'next-themes';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
+// Import all pages
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -14,31 +15,43 @@ import DashboardLayout from '@/layouts/DashboardLayout';
 import UserDashboard from '@/pages/UserDashboard';
 import OwnerDashboard from '@/pages/OwnerDashboard';
 import TrainerDashboard from '@/pages/TrainerDashboard';
-import Profile from '@/pages/Profile';
-import Settings from '@/pages/Settings';
-import Bookings from '@/pages/Bookings';
-import Centers from '@/pages/Centers';
-import Messages from '@/pages/Messages';
-import Notifications from '@/pages/Notifications';
-import Analytics from '@/pages/Analytics';
-import MembershipPlans from '@/pages/MembershipPlans';
-import Reviews from '@/pages/Reviews';
-import Schedule from '@/pages/Schedule';
+
+const isDeadlockError = (error: any) => {
+  return error?.message?.includes('deadlock detected');
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retry: (failureCount, error: any) => {
+        // Retry up to 3 times for deadlock errors, otherwise just once
+        if (isDeadlockError(error)) {
+          return failureCount < 3;
+        }
+        return failureCount < 1;
+      },
+      retryDelay: (attemptIndex) => {
+        // Exponential backoff with jitter for deadlocks
+        const baseDelay = Math.min(1000 * 2 ** attemptIndex, 30000);
+        return baseDelay + Math.random() * 1000; // Add random jitter
+      },
       staleTime: 5 * 60 * 1000, // 5 minutes
       refetchOnWindowFocus: false,
       refetchOnMount: true,
       refetchOnReconnect: true,
-      suspense: true,
     },
     mutations: {
-      retry: 1,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retry: (failureCount, error: any) => {
+        // Same retry logic for mutations
+        if (isDeadlockError(error)) {
+          return failureCount < 3;
+        }
+        return failureCount < 1;
+      },
+      retryDelay: (attemptIndex) => {
+        const baseDelay = Math.min(1000 * 2 ** attemptIndex, 30000);
+        return baseDelay + Math.random() * 1000;
+      },
     },
   },
 });
@@ -84,86 +97,6 @@ function App() {
                     element={
                       <ProtectedRoute allowedRoles={['trainer']}>
                         <TrainerDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="profile"
-                    element={
-                      <ProtectedRoute>
-                        <Profile />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="settings"
-                    element={
-                      <ProtectedRoute>
-                        <Settings />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="bookings"
-                    element={
-                      <ProtectedRoute>
-                        <Bookings />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="centers"
-                    element={
-                      <ProtectedRoute>
-                        <Centers />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="messages"
-                    element={
-                      <ProtectedRoute>
-                        <Messages />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="notifications"
-                    element={
-                      <ProtectedRoute>
-                        <Notifications />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="analytics"
-                    element={
-                      <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                        <Analytics />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="membership-plans"
-                    element={
-                      <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                        <MembershipPlans />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="reviews"
-                    element={
-                      <ProtectedRoute>
-                        <Reviews />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="schedule"
-                    element={
-                      <ProtectedRoute>
-                        <Schedule />
                       </ProtectedRoute>
                     }
                   />
