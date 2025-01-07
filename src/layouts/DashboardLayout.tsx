@@ -1,77 +1,63 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
-import { ErrorBoundary } from "react-error-boundary";
-import { Loader2 } from "lucide-react";
-import MainHeader from "@/components/MainHeader";
-import DashboardSidebar from "@/components/DashboardSidebar";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import React, { Suspense } from 'react';
+import { Outlet } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
+import DashboardSidebar from '@/components/DashboardSidebar';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/ui/use-toast';
 
-interface DashboardLayoutProps {
-  isOwner: boolean;
-}
-
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
-    <div className="text-center space-y-4">
-      <Loader2 className="h-8 w-8 animate-spin text-purple-500 mx-auto" />
-      <p className="text-white/70">Loading your dashboard...</p>
-    </div>
-  </div>
-);
-
-const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e] p-4">
-    <div className="max-w-md w-full space-y-4 text-center">
-      <h2 className="text-xl font-semibold text-white">Dashboard Error</h2>
-      <p className="text-white/70">{error.message}</p>
-      <button
-        onClick={resetErrorBoundary}
-        className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-      >
-        Retry
-      </button>
-    </div>
-  </div>
-);
-
-const DashboardLayout = ({ isOwner }: DashboardLayoutProps) => {
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const { loading, error } = useAuth();
+const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
   const { toast } = useToast();
 
-  if (loading) {
-    return <LoadingFallback />;
-  }
-
-  if (error) {
+  React.useEffect(() => {
     toast({
-      title: "Error",
+      title: 'Error',
       description: error.message,
-      variant: "destructive",
+      variant: 'destructive',
     });
-    return <ErrorFallback error={error} resetErrorBoundary={() => window.location.reload()} />;
-  }
+  }, [error, toast]);
 
   return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => window.location.reload()}
-    >
-      <div className="min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
-        <MainHeader onMenuClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} />
-        <DashboardSidebar 
-          isOwner={isOwner} 
-          isMobileOpen={isMobileSidebarOpen}
-          onMobileClose={() => setIsMobileSidebarOpen(false)}
-        />
-        <main className="transition-all duration-300 pt-24 lg:ml-64 p-8">
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Outlet />
-          </ErrorBoundary>
-        </main>
-      </div>
-    </ErrorBoundary>
+    <div className="flex h-screen flex-col items-center justify-center p-4">
+      <h2 className="mb-4 text-2xl font-bold text-red-600">Something went wrong</h2>
+      <p className="mb-4 text-gray-600">{error.message}</p>
+      <button
+        onClick={resetErrorBoundary}
+        className="rounded bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"
+      >
+        Try again
+      </button>
+    </div>
+  );
+};
+
+const LoadingFallback = () => (
+  <div className="flex h-screen items-center justify-center">
+    <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+  </div>
+);
+
+const DashboardLayout = () => {
+  const { role } = useAuth();
+
+  return (
+    <div className="flex min-h-screen">
+      <DashboardSidebar />
+      <main className="flex-1 overflow-x-hidden bg-gray-50 p-4">
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}
+          onReset={() => {
+            // Reset the state of your app here
+            window.location.reload();
+          }}
+        >
+          <Suspense fallback={<LoadingFallback />}>
+            <div className="container mx-auto">
+              <Outlet context={{ role }} />
+            </div>
+          </Suspense>
+        </ErrorBoundary>
+      </main>
+    </div>
   );
 };
 

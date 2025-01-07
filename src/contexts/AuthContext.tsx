@@ -1,209 +1,151 @@
-import { createContext, useContext, useReducer, useEffect } from "react";
-import { User } from "@supabase/supabase-js";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
-import { AuthContextType, UserProfile, Provider } from "./auth/types";
-import { authReducer } from "./auth/authReducer";
-import { initialAuthState } from "./auth/authState";
-import { ErrorBoundary } from "react-error-boundary";
-import { Loader2 } from "lucide-react";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Session, User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
+
+interface AuthContextType {
+  session: Session | null;
+  user: User | null;
+  loading: boolean;
+  error: Error | null;
+  signOut: () => Promise<void>;
+  role: string | null;
+  setRole: (role: string) => void;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(authReducer, initialAuthState);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        dispatch({ type: "SET_LOADING", payload: true });
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session?.user) {
-          dispatch({ type: "SET_USER", payload: session.user });
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profileError) throw profileError;
-
-          if (profileData) {
-            const userProfile: UserProfile = {
-              ...profileData,
-              last_session: profileData.last_session ? JSON.parse(profileData.last_session as string) : null
-            };
-            dispatch({ type: "SET_PROFILE", payload: userProfile });
-            dispatch({ type: "SET_ROLE", payload: userProfile.active_role });
-          }
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        dispatch({ type: "SET_ERROR", payload: error as Error });
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error fetching session:', error);
+        setError(error);
         toast({
-          title: "Authentication Error",
-          description: "Failed to initialize authentication",
-          variant: "destructive",
+          title: 'Authentication Error',
+          description: error.message,
+          variant: 'destructive',
         });
-      } finally {
-        dispatch({ type: "SET_LOADING", payload: false });
       }
-    };
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-    initializeAuth();
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event);
+      setSession(session);
+      setUser(session?.user ?? null);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-          dispatch({ type: "SET_USER", payload: session.user });
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+      if (session?.user) {
+        // Fetch user profile and role
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role, active_role')
+          .eq('id', session.user.id)
+          .single();
 
-          if (profileError) {
-            console.error('Profile fetch error:', profileError);
-            toast({
-              title: "Error",
-              description: "Failed to fetch user profile",
-              variant: "destructive",
-            });
-          } else if (profileData) {
-            const userProfile: UserProfile = {
-              ...profileData,
-              last_session: profileData.last_session ? JSON.parse(profileData.last_session as string) : null
-            };
-            dispatch({ type: "SET_PROFILE", payload: userProfile });
-            dispatch({ type: "SET_ROLE", payload: userProfile.active_role });
-          }
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          toast({
+            title: 'Profile Error',
+            description: profileError.message,
+            variant: 'destructive',
+          });
         } else {
-          dispatch({ type: "RESET_STATE" });
+          setRole(profile?.active_role || profile?.role || 'user');
         }
+      } else {
+        setRole(null);
       }
-    );
+
+      // Handle specific auth events
+      switch (event) {
+        case 'SIGNED_IN':
+          toast({
+            title: 'Signed in successfully',
+            description: 'Welcome back!',
+          });
+          navigate('/dashboard');
+          break;
+        case 'SIGNED_OUT':
+          toast({
+            title: 'Signed out successfully',
+            description: 'See you soon!',
+          });
+          navigate('/');
+          break;
+        case 'USER_UPDATED':
+          toast({
+            title: 'Profile updated',
+            description: 'Your profile has been updated successfully.',
+          });
+          break;
+      }
+    });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate, toast]);
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
-      navigate('/login');
-      toast({
-        title: "Signed out successfully",
-        description: "You have been logged out of your account.",
-      });
-    } catch (error) {
-      console.error('Sign out error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to sign out",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const switchRole = async (newRole: string) => {
-    if (!state.user?.id) return;
-    
-    dispatch({ type: "SET_LOADING", payload: true });
-    
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ active_role: newRole })
-        .eq('id', state.user.id);
-
-      if (error) throw error;
-      
-      dispatch({ type: "UPDATE_ROLE_SUCCESS", payload: newRole });
-      
-      navigate(newRole === 'owner' ? '/dashboard' : '/user/dashboard');
-      
-      toast({
-        title: "Role switched successfully",
-        description: `You are now in ${newRole} mode`,
-      });
-    } catch (error) {
-      console.error('Role switch error:', error);
-      dispatch({ type: "UPDATE_ROLE_ERROR", payload: error as Error });
-      toast({
-        title: "Error switching role",
-        description: "Please try again",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const signInWithProvider = async (provider: Provider) => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({ provider });
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error('Error signing out:', error);
       toast({
-        title: "Error",
-        description: "Failed to sign in",
-        variant: "destructive",
+        title: 'Error signing out',
+        description: error instanceof Error ? error.message : 'An unknown error occurred',
+        variant: 'destructive',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const value: AuthContextType = {
-    user: state.user,
-    profile: state.profile,
-    loading: state.loading,
-    error: state.error,
-    currentRole: state.currentRole,
-    isOwner: state.profile?.role === 'owner',
-    isTrainer: state.profile?.role === 'trainer',
-    isAdmin: state.profile?.role === 'admin',
+  const value = {
+    session,
+    user,
+    loading,
+    error,
     signOut,
-    switchRole,
-    signInWithProvider,
-    sendVerificationEmail: async () => {},
-    verifyEmail: async () => {},
-    sendPasswordReset: async () => {},
-    resetPassword: async () => {},
+    role,
+    setRole,
   };
-
-  if (state.loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
-      </div>
-    );
-  }
 
   return (
-    <ErrorBoundary
-      fallback={
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
-          <h2 className="text-xl font-semibold text-white mb-4">Something went wrong</h2>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-          >
-            Retry
-          </button>
+    <AuthContext.Provider value={value}>
+      {loading ? (
+        <div className="flex h-screen items-center justify-center">
+          <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
         </div>
-      }
-    >
-      <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-    </ErrorBoundary>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

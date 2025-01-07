@@ -1,73 +1,51 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { Loader2 } from "lucide-react";
-import { ErrorBoundary } from "react-error-boundary";
-import { useEffect } from "react";
+import React, { useEffect } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/ui/use-toast';
 
-type ProtectedRouteProps = {
+interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: string[];
-};
+}
 
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
-    <div className="text-center space-y-4">
-      <Loader2 className="h-8 w-8 animate-spin text-purple-500 mx-auto" />
-      <p className="text-white/70">Loading your dashboard...</p>
-    </div>
-  </div>
-);
-
-const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e] p-4">
-    <div className="max-w-md w-full space-y-4 text-center">
-      <h2 className="text-xl font-semibold text-white">Something went wrong</h2>
-      <p className="text-white/70">{error.message}</p>
-      <button
-        onClick={resetErrorBoundary}
-        className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-      >
-        Try again
-      </button>
-    </div>
-  </div>
-);
-
-const ProtectedRoute = ({ children, allowedRoles = [] }: ProtectedRouteProps) => {
-  const { user, profile, loading, error } = useAuth();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles = [] }) => {
+  const { user, loading, role } = useAuth();
   const location = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (!loading && !error && user) {
-      sessionStorage.setItem('lastRoute', location.pathname);
+    if (!loading && !user) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please sign in to access this page.',
+        variant: 'destructive',
+      });
+    } else if (!loading && user && allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
+      toast({
+        title: 'Access denied',
+        description: 'You do not have permission to access this page.',
+        variant: 'destructive',
+      });
     }
-  }, [user, location, loading, error]);
+  }, [loading, user, role, allowedRoles.length, toast]);
 
   if (loading) {
-    return <LoadingFallback />;
-  }
-
-  if (error) {
-    throw error;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+      </div>
+    );
   }
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles.length > 0 && profile && !allowedRoles.includes(profile.active_role)) {
-    const lastValidRoute = sessionStorage.getItem('lastRoute') || '/';
-    return <Navigate to={lastValidRoute} replace />;
+  if (allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => window.location.reload()}
-    >
-      {children}
-    </ErrorBoundary>
-  );
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
