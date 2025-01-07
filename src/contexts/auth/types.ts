@@ -1,4 +1,5 @@
 import { User } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 import { Database } from "@/integrations/supabase/types/database";
 
 export type Provider = 'google' | 'facebook' | 'twitter' | 'github' | 'discord' | 'twitch';
