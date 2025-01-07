@@ -24,25 +24,22 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error: any) => {
-        // Retry up to 3 times for deadlock errors, otherwise just once
         if (isDeadlockError(error)) {
           return failureCount < 3;
         }
         return failureCount < 1;
       },
       retryDelay: (attemptIndex) => {
-        // Exponential backoff with jitter for deadlocks
         const baseDelay = Math.min(1000 * 2 ** attemptIndex, 30000);
-        return baseDelay + Math.random() * 1000; // Add random jitter
+        return baseDelay + Math.random() * 1000;
       },
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
       refetchOnMount: true,
       refetchOnReconnect: true,
     },
     mutations: {
       retry: (failureCount, error: any) => {
-        // Same retry logic for mutations
         if (isDeadlockError(error)) {
           return failureCount < 3;
         }

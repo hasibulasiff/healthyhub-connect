@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -38,15 +38,15 @@ const LoadingFallback = () => (
 
 const DashboardLayout = () => {
   const { role } = useAuth();
+  const isOwner = role === 'owner';
 
   return (
     <div className="flex min-h-screen">
-      <DashboardSidebar />
+      <DashboardSidebar isOwner={isOwner} />
       <main className="flex-1 overflow-x-hidden bg-gray-50 p-4">
         <ErrorBoundary
           FallbackComponent={ErrorFallback}
           onReset={() => {
-            // Reset the state of your app here
             window.location.reload();
           }}
         >

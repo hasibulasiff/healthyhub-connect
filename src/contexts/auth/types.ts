@@ -16,19 +16,15 @@ export interface UserProfile extends Omit<ProfilesRow, 'last_session'> {
 }
 
 export interface AuthContextType {
+  session: Session | null;
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
   error: Error | null;
-  currentRole: string | null;
-  isOwner: boolean;
-  isTrainer: boolean;
-  isAdmin: boolean;
   signOut: () => Promise<void>;
-  switchRole: (newRole: string) => Promise<void>;
-  signInWithProvider: (provider: Provider) => Promise<void>;
-  sendVerificationEmail: () => Promise<void>;
-  verifyEmail: (token: string) => Promise<void>;
+  role: string | null;
+  setRole: (role: string) => void;
   sendPasswordReset: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
 }
