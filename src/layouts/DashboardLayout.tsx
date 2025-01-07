@@ -5,36 +5,52 @@ import { Loader2 } from "lucide-react";
 import MainHeader from "@/components/MainHeader";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface DashboardLayoutProps {
   isOwner: boolean;
 }
 
 const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
+    <div className="text-center space-y-4">
+      <Loader2 className="h-8 w-8 animate-spin text-purple-500 mx-auto" />
+      <p className="text-white/70">Loading your dashboard...</p>
+    </div>
   </div>
 );
 
 const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
-  <div className="flex flex-col items-center justify-center min-h-screen p-4">
-    <h2 className="text-xl font-semibold mb-4">Dashboard Error</h2>
-    <p className="text-sm text-gray-600 mb-4">{error.message}</p>
-    <button
-      onClick={resetErrorBoundary}
-      className="px-4 py-2 bg-primary text-white rounded-md"
-    >
-      Retry
-    </button>
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e] p-4">
+    <div className="max-w-md w-full space-y-4 text-center">
+      <h2 className="text-xl font-semibold text-white">Dashboard Error</h2>
+      <p className="text-white/70">{error.message}</p>
+      <button
+        onClick={resetErrorBoundary}
+        className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+      >
+        Retry
+      </button>
+    </div>
   </div>
 );
 
 const DashboardLayout = ({ isOwner }: DashboardLayoutProps) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const { loading } = useAuth();
+  const { loading, error } = useAuth();
+  const { toast } = useToast();
 
   if (loading) {
     return <LoadingFallback />;
+  }
+
+  if (error) {
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive",
+    });
+    return <ErrorFallback error={error} resetErrorBoundary={() => window.location.reload()} />;
   }
 
   return (
@@ -42,7 +58,7 @@ const DashboardLayout = ({ isOwner }: DashboardLayoutProps) => {
       FallbackComponent={ErrorFallback}
       onReset={() => window.location.reload()}
     >
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
         <MainHeader onMenuClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} />
         <DashboardSidebar 
           isOwner={isOwner} 

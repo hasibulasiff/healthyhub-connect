@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -95,6 +95,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await supabase.auth.signOut();
       navigate('/login');
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out of your account.",
+      });
     } catch (error) {
       console.error('Sign out error:', error);
       toast({
@@ -107,6 +111,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const switchRole = async (newRole: string) => {
     if (!state.user?.id) return;
+    
+    dispatch({ type: "SET_LOADING", payload: true });
+    
     try {
       const { error } = await supabase
         .from('profiles')
@@ -114,12 +121,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('id', state.user.id);
 
       if (error) throw error;
-      dispatch({ type: "SET_ROLE", payload: newRole });
+      
+      dispatch({ type: "UPDATE_ROLE_SUCCESS", payload: newRole });
+      
+      navigate(newRole === 'owner' ? '/dashboard' : '/user/dashboard');
+      
+      toast({
+        title: "Role switched successfully",
+        description: `You are now in ${newRole} mode`,
+      });
     } catch (error) {
       console.error('Role switch error:', error);
+      dispatch({ type: "UPDATE_ROLE_ERROR", payload: error as Error });
       toast({
-        title: "Error",
-        description: "Failed to switch role",
+        title: "Error switching role",
+        description: "Please try again",
         variant: "destructive",
       });
     }
@@ -139,22 +155,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const sendVerificationEmail = async () => {
-    // Implementation
-  };
-
-  const verifyEmail = async (token: string) => {
-    // Implementation
-  };
-
-  const sendPasswordReset = async (email: string) => {
-    // Implementation
-  };
-
-  const resetPassword = async (token: string, newPassword: string) => {
-    // Implementation
-  };
-
   const value: AuthContextType = {
     user: state.user,
     profile: state.profile,
@@ -167,16 +167,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signOut,
     switchRole,
     signInWithProvider,
-    sendVerificationEmail,
-    verifyEmail,
-    sendPasswordReset,
-    resetPassword,
+    sendVerificationEmail: async () => {},
+    verifyEmail: async () => {},
+    sendPasswordReset: async () => {},
+    resetPassword: async () => {},
   };
 
   if (state.loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
       </div>
     );
   }
@@ -184,11 +184,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ErrorBoundary
       fallback={
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <h2 className="text-xl font-semibold mb-4">Something went wrong</h2>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#1a1528] to-[#0f0a1e]">
+          <h2 className="text-xl font-semibold text-white mb-4">Something went wrong</h2>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-white rounded-md"
+            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
           >
             Retry
           </button>
