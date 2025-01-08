@@ -44,6 +44,9 @@ import EventDetail from "./pages/EventDetail";
 import TrainerDetail from "./pages/TrainerDetail";
 import EventManagement from "./pages/EventManagement";
 import TrainerDashboard from "./pages/TrainerDashboard";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Centers from "./pages/Centers";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,6 +70,7 @@ const App = () => {
                 {/* Public routes */}
                 <Route path="/" element={<Index />} />
                 <Route path="/search" element={<SearchResults />} />
+                <Route path="/centers" element={<Centers />} />
                 <Route path="/center/:id" element={<CenterDetail />} />
                 <Route path="/event/:id" element={<EventDetail />} />
                 <Route path="/trainer/:id" element={<TrainerDetail />} />
@@ -80,14 +84,16 @@ const App = () => {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
 
-                {/* Owner Dashboard routes */}
+                {/* Protected routes */}
                 <Route
                   element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <DashboardLayout isOwner={true} />
+                    <ProtectedRoute>
+                      <DashboardLayout />
                     </ProtectedRoute>
                   }
                 >
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/dashboard" element={<OwnerDashboard />} />
                   <Route path="/listings" element={<ListingManagement />} />
                   <Route path="/analytics" element={<EventAnalytics />} />
@@ -96,19 +102,6 @@ const App = () => {
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/reviews" element={<Review />} />
                   <Route path="/payments" element={<PaymentsPage />} />
-                  <Route path="/settings" element={<ProfileSettings />} />
-                  <Route path="/events/manage" element={<EventManagement />} />
-                  <Route path="/ads/manage" element={<AdManagement />} />
-                </Route>
-
-                {/* User Dashboard routes */}
-                <Route
-                  element={
-                    <ProtectedRoute allowedRoles={['user', 'trainer']}>
-                      <DashboardLayout isOwner={false} />
-                    </ProtectedRoute>
-                  }
-                >
                   <Route path="/user/dashboard" element={<UserDashboard />} />
                   <Route path="/memberships" element={<MembershipPurchase />} />
                   <Route path="/bookings" element={<BookingsPage />} />
@@ -118,37 +111,6 @@ const App = () => {
                   <Route path="/user/settings" element={<ProfileSettings />} />
                 </Route>
 
-                {/* Trainer Dashboard routes */}
-                <Route
-                  element={
-                    <ProtectedRoute allowedRoles={['trainer']}>
-                      <DashboardLayout isOwner={false} />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
-                </Route>
-
-                {/* Protected Notifications */}
-                <Route
-                  path="/notifications"
-                  element={
-                    <ProtectedRoute>
-                      <Notifications />
-                    </ProtectedRoute>
-                  }
-                />
-                
-                {/* Protected Subscription */}
-                <Route
-                  path="/subscription"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner', 'trainer']}>
-                      <SubscriptionPricing />
-                    </ProtectedRoute>
-                  }
-                />
-                
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
