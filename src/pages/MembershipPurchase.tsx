@@ -1,32 +1,40 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { MembershipPlan } from "@/types/membership";
+import { useToast } from "@/hooks/use-toast";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { membershipService, MembershipPlan } from "@/services/membershipService";
 
-const MembershipPurchase = () => {
+export default function MembershipPurchase() {
   const { centerId } = useParams();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const loadPlans = async () => {
+    const fetchPlans = async () => {
       try {
-        if (!centerId) return;
-        const data = await membershipService.getPlans(centerId);
-        setPlans(data);
+        const { data, error } = await supabase
+          .from('membership_plans')
+          .select('*')
+          .eq('center_id', centerId)
+          .eq('is_active', true);
+
+        if (error) throw error;
+
+        // Convert features from JSON to string array if needed
+        const formattedPlans = data.map(plan => ({
+          ...plan,
+          features: Array.isArray(plan.features) ? plan.features : []
+        }));
+
+        setPlans(formattedPlans);
       } catch (error) {
+        console.error('Error fetching plans:', error);
         toast({
-          title: "Error",
-          description: "Failed to load membership plans",
+          title: "Error fetching plans",
+          description: "Please try again later",
           variant: "destructive",
         });
       } finally {
@@ -34,103 +42,69 @@ const MembershipPurchase = () => {
       }
     };
 
-    loadPlans();
+    if (centerId) {
+      fetchPlans();
+    }
   }, [centerId, toast]);
 
-  const handlePurchase = async () => {
-    if (!selectedPlan || !user || !centerId) {
-      toast({
-        title: "Error",
-        description: "Please select a plan to continue",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setProcessing(true);
+  const handlePurchase = async (planId: string) => {
     try {
-      await membershipService.subscribeToPlan(user.id, selectedPlan, centerId);
+      const { error } = await supabase
+        .from('memberships')
+        .insert({
+          user_id: supabase.auth.user()?.id,
+          center_id: centerId,
+          plan_id: planId,
+          status: 'active',
+          start_date: new Date().toISOString(),
+          end_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString() // Assuming 1 month duration
+        });
+
+      if (error) throw error;
+
       toast({
-        title: "Success",
-        description: "Membership purchased successfully",
+        title: "Membership purchased",
+        description: "Your membership has been successfully purchased.",
       });
-      navigate("/dashboard");
     } catch (error) {
+      console.error('Error purchasing plan:', error);
       toast({
-        title: "Error",
-        description: "Failed to process payment",
+        title: "Error purchasing plan",
+        description: "Please try again later",
         variant: "destructive",
       });
-    } finally {
-      setProcessing(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <h1 className="text-4xl font-bold text-center mb-12">Choose Your Membership</h1>
-        
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.id}
-              className={`relative transition-all duration-300 hover:shadow-lg ${
-                selectedPlan === plan.id ? 'border-primary' : ''
-              }`}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Choose a Membership Plan</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {plans.map((plan) => (
+          <Card key={plan.id} className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">{plan.name}</h2>
+            <p className="text-gray-600 mb-4">{plan.description}</p>
+            <p className="text-3xl font-bold mb-4">${plan.price}</p>
+            <ul className="mb-6">
+              {plan.features.map((feature, index) => (
+                <li key={index} className="mb-2">
+                  • {feature}
+                </li>
+              ))}
+            </ul>
+            <Button 
+              onClick={() => handlePurchase(plan.id)}
+              className="w-full"
             >
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <p className="text-2xl font-bold">${plan.price}/mo</p>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <Check className="text-primary" size={20} />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  className="w-full mt-6"
-                  variant={selectedPlan === plan.id ? 'default' : 'outline'}
-                  onClick={() => setSelectedPlan(plan.id)}
-                >
-                  {selectedPlan === plan.id ? 'Selected' : 'Select Plan'}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <Button 
-            size="lg" 
-            onClick={handlePurchase} 
-            disabled={!selectedPlan || processing}
-          >
-            {processing ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              'Proceed to Payment'
-            )}
-          </Button>
-        </div>
-      </main>
+              Purchase Plan
+            </Button>
+          </Card>
+        ))}
+      </div>
     </div>
   );
-};
-
-export default MembershipPurchase;
+}

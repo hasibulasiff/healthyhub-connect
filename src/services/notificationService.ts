@@ -1,47 +1,44 @@
 import { supabase } from "@/integrations/supabase/client";
+import { Notification } from "@/types/notification";
 
-export interface Notification {
-  id: string;
-  user_id: string;
-  title: string;
-  message: string;
-  type: string;
-  read: boolean;
-  created_at: string;
-}
+export const updateNotificationPreferences = async (userId: string, preferences: any) => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ notification_preferences: preferences })
+    .eq('id', userId);
 
-export const notificationService = {
-  async createNotification(notification: Omit<Notification, 'id' | 'created_at' | 'read'>) {
-    const { data, error } = await supabase
-      .from('notifications')
-      .insert({
-        ...notification,
-        read: false
-      })
-      .select()
-      .single();
+  if (error) throw error;
+};
 
-    if (error) throw error;
-    return data;
-  },
+export const subscribeToNotifications = (userId: string, callback: (notification: any) => void) => {
+  const subscription = supabase
+    .channel('public:notifications')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${userId}`
+      },
+      (payload) => {
+        callback(payload.new);
+      }
+    )
+    .subscribe();
 
-  async getUserNotifications(userId: string) {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+  return () => {
+    subscription.unsubscribe();
+  };
+};
 
-    if (error) throw error;
-    return data;
-  },
+export const createNotification = async (notification: Omit<Notification, 'id' | 'created_at'>) => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .insert(notification)
+    .select()
+    .single();
 
-  async markAsRead(notificationId: string) {
-    const { error } = await supabase
-      .from('notifications')
-      .update({ read: true })
-      .eq('id', notificationId);
-
-    if (error) throw error;
-  }
+  if (error) throw error;
+  return data;
 };
