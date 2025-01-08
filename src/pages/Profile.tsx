@@ -9,6 +9,20 @@ import { Award, Activity, History } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+interface UserActivity {
+  id: string;
+  activity_type: string;
+  description: string;
+  created_at: string;
+}
+
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  achieved_at: string;
+}
+
 const Profile = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
@@ -23,13 +37,13 @@ const Profile = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as UserActivity[];
     },
     enabled: !!user?.id,
   });
 
   const { data: achievements, isLoading: achievementsLoading } = useQuery({
-    queryKey: ['user-achievements', user?.id],
+    queryKey: ['achievements', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('achievements')
@@ -38,7 +52,7 @@ const Profile = () => {
         .order('achieved_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as Achievement[];
     },
     enabled: !!user?.id,
   });

@@ -192,33 +192,45 @@ export type Database = {
       }
       centers: {
         Row: {
+          amenities: string[] | null
+          coordinates: unknown | null
           created_at: string
           description: string | null
           id: string
           location: string | null
           name: string
+          operating_hours: Json | null
           owner_id: string | null
           placeholder_image: string | null
+          price_range: string | null
           type: string | null
         }
         Insert: {
+          amenities?: string[] | null
+          coordinates?: unknown | null
           created_at?: string
           description?: string | null
           id?: string
           location?: string | null
           name: string
+          operating_hours?: Json | null
           owner_id?: string | null
           placeholder_image?: string | null
+          price_range?: string | null
           type?: string | null
         }
         Update: {
+          amenities?: string[] | null
+          coordinates?: unknown | null
           created_at?: string
           description?: string | null
           id?: string
           location?: string | null
           name?: string
+          operating_hours?: Json | null
           owner_id?: string | null
           placeholder_image?: string | null
+          price_range?: string | null
           type?: string | null
         }
         Relationships: [
@@ -656,6 +668,7 @@ export type Database = {
           pagination_state: Json | null
           payment_details: Json | null
           phone: string | null
+          privacy_settings: Json | null
           role: Database["public"]["Enums"]["user_role"] | null
           services_offered: string[] | null
           social_id: string | null
@@ -682,6 +695,7 @@ export type Database = {
           pagination_state?: Json | null
           payment_details?: Json | null
           phone?: string | null
+          privacy_settings?: Json | null
           role?: Database["public"]["Enums"]["user_role"] | null
           services_offered?: string[] | null
           social_id?: string | null
@@ -708,6 +722,7 @@ export type Database = {
           pagination_state?: Json | null
           payment_details?: Json | null
           phone?: string | null
+          privacy_settings?: Json | null
           role?: Database["public"]["Enums"]["user_role"] | null
           services_offered?: string[] | null
           social_id?: string | null
@@ -854,6 +869,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "trainer_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_activities: {
+        Row: {
+          activity_type: string
+          created_at: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activities_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"

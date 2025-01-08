@@ -9,13 +9,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Bell, Lock, Palette } from "lucide-react";
 import { NotificationPreferences } from "@/components/notifications/NotificationPreferences";
 
+interface PrivacySettings {
+  profile_visible: boolean;
+  activity_visible: boolean;
+}
+
 const Settings = () => {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const [theme, setTheme] = useState(profile?.theme_preference || 'light');
-  const [privacySettings, setPrivacySettings] = useState(profile?.privacy_settings || {
+  const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
     profile_visible: true,
-    activity_visible: true
+    activity_visible: true,
   });
 
   const handleThemeChange = async (newTheme: string) => {
@@ -42,7 +47,7 @@ const Settings = () => {
     }
   };
 
-  const handlePrivacyChange = async (key: string, value: boolean) => {
+  const handlePrivacyChange = async (key: keyof PrivacySettings, value: boolean) => {
     const newSettings = { ...privacySettings, [key]: value };
     try {
       const { error } = await supabase

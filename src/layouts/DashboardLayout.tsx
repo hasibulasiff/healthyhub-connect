@@ -6,10 +6,6 @@ import MainHeader from "@/components/MainHeader";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 
-interface DashboardLayoutProps {
-  isOwner: boolean;
-}
-
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
     <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -29,13 +25,15 @@ const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetError
   </div>
 );
 
-const DashboardLayout = ({ isOwner }: DashboardLayoutProps) => {
+const DashboardLayout = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const { loading } = useAuth();
+  const { loading, profile } = useAuth();
 
   if (loading) {
     return <LoadingFallback />;
   }
+
+  const isOwner = profile?.active_role === 'owner';
 
   return (
     <ErrorBoundary
