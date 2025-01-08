@@ -1,16 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Notification } from "@/types/notification";
 
-export const updateNotificationPreferences = async (userId: string, preferences: any) => {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ notification_preferences: preferences })
-    .eq('id', userId);
-
-  if (error) throw error;
-};
-
-export const subscribeToNotifications = (userId: string, callback: (notification: any) => void) => {
+export const subscribeToNotifications = (userId: string, callback: (notification: Notification) => void) => {
   const subscription = supabase
     .channel('public:notifications')
     .on(
@@ -22,7 +13,7 @@ export const subscribeToNotifications = (userId: string, callback: (notification
         filter: `user_id=eq.${userId}`
       },
       (payload) => {
-        callback(payload.new);
+        callback(payload.new as Notification);
       }
     )
     .subscribe();
@@ -32,10 +23,29 @@ export const subscribeToNotifications = (userId: string, callback: (notification
   };
 };
 
-export const createNotification = async (notification: Omit<Notification, 'id' | 'created_at'>) => {
+export const updateNotificationPreferences = async (userId: string, preferences: any) => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ notification_preferences: preferences })
+    .eq('id', userId);
+
+  if (error) throw error;
+};
+
+export const createNotification = async (notification: {
+  user_id: string;
+  title: string;
+  message: string;
+  type: string;
+  related_id?: string;
+  related_type?: string;
+}) => {
   const { data, error } = await supabase
     .from('notifications')
-    .insert(notification)
+    .insert({
+      ...notification,
+      read: false
+    })
     .select()
     .single();
 

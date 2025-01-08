@@ -23,11 +23,11 @@ export default function MembershipPurchase() {
 
         if (error) throw error;
 
-        // Convert features from JSON to string array if needed
+        // Convert features from JSON to string array
         const formattedPlans = data.map(plan => ({
           ...plan,
           features: Array.isArray(plan.features) ? plan.features : []
-        }));
+        })) as MembershipPlan[];
 
         setPlans(formattedPlans);
       } catch (error) {
@@ -49,15 +49,18 @@ export default function MembershipPurchase() {
 
   const handlePurchase = async (planId: string) => {
     try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
       const { error } = await supabase
         .from('memberships')
         .insert({
-          user_id: supabase.auth.user()?.id,
+          user_id: user.id,
           center_id: centerId,
           plan_id: planId,
           status: 'active',
           start_date: new Date().toISOString(),
-          end_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString() // Assuming 1 month duration
+          end_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
         });
 
       if (error) throw error;
