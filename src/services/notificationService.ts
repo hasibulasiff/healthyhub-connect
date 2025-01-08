@@ -1,52 +1,47 @@
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 
-export const subscribeToNotifications = (userId: string, onNotification: (notification: any) => void) => {
-  const channel = supabase
-    .channel('notifications')
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'notifications',
-        filter: `user_id=eq.${userId}`,
-      },
-      (payload) => {
-        onNotification(payload.new);
-        toast({
-          title: payload.new.title,
-          description: payload.new.message,
-        });
-      }
-    )
-    .subscribe();
-
-  return () => {
-    supabase.removeChannel(channel);
-  };
-};
-
-export const updateNotificationPreferences = async (userId: string, preferences: any) => {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ notification_preferences: preferences })
-    .eq('id', userId);
-
-  if (error) throw error;
-};
-
-export const sendNotification = async (notification: {
+export interface Notification {
+  id: string;
   user_id: string;
   title: string;
   message: string;
   type: string;
-  related_id?: string;
-  related_type?: string;
-}) => {
-  const { error } = await supabase
-    .from('notifications')
-    .insert([notification]);
+  read: boolean;
+  created_at: string;
+}
 
-  if (error) throw error;
+export const notificationService = {
+  async createNotification(notification: Omit<Notification, 'id' | 'created_at' | 'read'>) {
+    const { data, error } = await supabase
+      .from('notifications')
+      .insert({
+        ...notification,
+        read: false
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getUserNotifications(userId: string) {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+
+  async markAsRead(notificationId: string) {
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read: true })
+      .eq('id', notificationId);
+
+    if (error) throw error;
+  }
 };

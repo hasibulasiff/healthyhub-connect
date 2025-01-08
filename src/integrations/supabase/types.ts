@@ -139,6 +139,39 @@ export type Database = {
           },
         ]
       }
+      auth_sessions: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          last_active_at: string | null
+          refresh_token: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          last_active_at?: string | null
+          refresh_token?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          last_active_at?: string | null
+          refresh_token?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           booking_date: string | null
@@ -806,7 +839,10 @@ export type Database = {
           business_type: string | null
           created_at: string
           email_preferences: Json | null
+          email_verification_sent_at: string | null
+          email_verification_token: string | null
           email_verified: boolean | null
+          email_verified_at: string | null
           full_name: string | null
           id: string
           interests: string[] | null
@@ -822,6 +858,7 @@ export type Database = {
           services_offered: string[] | null
           social_connections: Json | null
           social_id: string | null
+          social_login_providers: Json | null
           social_provider: string | null
           theme_preference: string | null
           username: string | null
@@ -836,7 +873,10 @@ export type Database = {
           business_type?: string | null
           created_at?: string
           email_preferences?: Json | null
+          email_verification_sent_at?: string | null
+          email_verification_token?: string | null
           email_verified?: boolean | null
+          email_verified_at?: string | null
           full_name?: string | null
           id: string
           interests?: string[] | null
@@ -852,6 +892,7 @@ export type Database = {
           services_offered?: string[] | null
           social_connections?: Json | null
           social_id?: string | null
+          social_login_providers?: Json | null
           social_provider?: string | null
           theme_preference?: string | null
           username?: string | null
@@ -866,7 +907,10 @@ export type Database = {
           business_type?: string | null
           created_at?: string
           email_preferences?: Json | null
+          email_verification_sent_at?: string | null
+          email_verification_token?: string | null
           email_verified?: boolean | null
+          email_verified_at?: string | null
           full_name?: string | null
           id?: string
           interests?: string[] | null
@@ -882,6 +926,7 @@ export type Database = {
           services_offered?: string[] | null
           social_connections?: Json | null
           social_id?: string | null
+          social_login_providers?: Json | null
           social_provider?: string | null
           theme_preference?: string | null
           username?: string | null

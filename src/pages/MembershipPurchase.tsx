@@ -1,139 +1,134 @@
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { membershipService, MembershipPlan } from "@/services/membershipService";
 
 const MembershipPurchase = () => {
+  const { centerId } = useParams();
+  const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [plans, setPlans] = useState<MembershipPlan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
 
-  const handlePurchase = () => {
-    if (!selectedPlan) {
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        if (!centerId) return;
+        const data = await membershipService.getPlans(centerId);
+        setPlans(data);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load membership plans",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPlans();
+  }, [centerId, toast]);
+
+  const handlePurchase = async () => {
+    if (!selectedPlan || !user || !centerId) {
       toast({
-        title: "Please select a plan",
-        description: "You must select a membership plan before proceeding.",
+        title: "Error",
+        description: "Please select a plan to continue",
         variant: "destructive",
       });
       return;
     }
 
-    toast({
-      title: "Purchase Initiated",
-      description: "Redirecting to payment gateway...",
-    });
+    setProcessing(true);
+    try {
+      await membershipService.subscribeToPlan(user.id, selectedPlan, centerId);
+      toast({
+        title: "Success",
+        description: "Membership purchased successfully",
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process payment",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessing(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <h1 className="text-4xl font-bold text-center mb-12">Choose Your Membership</h1>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {/* Basic Plan */}
-          <Card className={`relative ${selectedPlan === 'basic' ? 'border-primary' : ''}`}>
-            <CardHeader>
-              <CardTitle>Basic</CardTitle>
-              <p className="text-2xl font-bold">$29/mo</p>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>Access to basic facilities</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>2 classes per month</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>Basic support</span>
-                </li>
-              </ul>
-              <Button 
-                className="w-full mt-6"
-                variant={selectedPlan === 'basic' ? 'default' : 'outline'}
-                onClick={() => setSelectedPlan('basic')}
-              >
-                {selectedPlan === 'basic' ? 'Selected' : 'Select Plan'}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Pro Plan */}
-          <Card className={`relative ${selectedPlan === 'pro' ? 'border-primary' : ''}`}>
-            <CardHeader>
-              <CardTitle>Pro</CardTitle>
-              <p className="text-2xl font-bold">$49/mo</p>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>Access to all facilities</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>5 classes per month</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>Priority support</span>
-                </li>
-              </ul>
-              <Button 
-                className="w-full mt-6"
-                variant={selectedPlan === 'pro' ? 'default' : 'outline'}
-                onClick={() => setSelectedPlan('pro')}
-              >
-                {selectedPlan === 'pro' ? 'Selected' : 'Select Plan'}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Premium Plan */}
-          <Card className={`relative ${selectedPlan === 'premium' ? 'border-primary' : ''}`}>
-            <CardHeader>
-              <CardTitle>Premium</CardTitle>
-              <p className="text-2xl font-bold">$99/mo</p>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>Unlimited access</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>Unlimited classes</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="text-primary" size={20} />
-                  <span>24/7 support</span>
-                </li>
-              </ul>
-              <Button 
-                className="w-full mt-6"
-                variant={selectedPlan === 'premium' ? 'default' : 'outline'}
-                onClick={() => setSelectedPlan('premium')}
-              >
-                {selectedPlan === 'premium' ? 'Selected' : 'Select Plan'}
-              </Button>
-            </CardContent>
-          </Card>
+          {plans.map((plan) => (
+            <Card 
+              key={plan.id}
+              className={`relative transition-all duration-300 hover:shadow-lg ${
+                selectedPlan === plan.id ? 'border-primary' : ''
+              }`}
+            >
+              <CardHeader>
+                <CardTitle>{plan.name}</CardTitle>
+                <p className="text-2xl font-bold">${plan.price}/mo</p>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-4">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <Check className="text-primary" size={20} />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button 
+                  className="w-full mt-6"
+                  variant={selectedPlan === plan.id ? 'default' : 'outline'}
+                  onClick={() => setSelectedPlan(plan.id)}
+                >
+                  {selectedPlan === plan.id ? 'Selected' : 'Select Plan'}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <div className="text-center mt-12">
-          <Button size="lg" onClick={handlePurchase} disabled={!selectedPlan}>
-            Proceed to Payment
+          <Button 
+            size="lg" 
+            onClick={handlePurchase} 
+            disabled={!selectedPlan || processing}
+          >
+            {processing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              'Proceed to Payment'
+            )}
           </Button>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
