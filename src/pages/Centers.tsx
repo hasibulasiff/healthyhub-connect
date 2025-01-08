@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Search, MapPin, Filter } from "lucide-react";
 import CenterCard from "@/components/centers/CenterCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Event } from "@/components/events/types";
 
 const Centers = () => {
   const [search, setSearch] = useState("");
@@ -42,7 +43,19 @@ const Centers = () => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+
+      // Transform the centers data to match the Event interface
+      return data?.map(center => ({
+        id: center.id,
+        title: center.name,
+        description: center.description || '',
+        date: center.created_at,
+        location: center.location || '',
+        category: center.type || 'Center',
+        image: center.placeholder_image || 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80',
+        attendees: center.reviews?.length || 0,
+        type: 'center' as const
+      })) || [];
     },
   });
 
