@@ -1,16 +1,13 @@
 export interface Listing {
   id: number;
   title: string;
-  type: string;
-  sponsored?: boolean;
-  rating: number;
-  reviews: number;
-  price: string;
-  location: string;
-  image: string;
   description: string;
-  amenities?: string[];
-  features?: string[];
-  openNow?: boolean;
+  location: string;
+  rating: number;
   category: string;
+  image: string;
+  reviews: number;
+  sponsored?: boolean;
+  type: string;
+  price: number;
 }
