@@ -1,0 +1,21 @@
+{
+  "name": "HealthyHub Connect",
+  "short_name": "HealthyHub",
+  "description": "Find and book fitness centers, wellness spaces and sports events near you",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0118",
+  "theme_color": "#0a0118",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
